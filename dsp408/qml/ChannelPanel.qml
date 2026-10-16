@@ -65,7 +65,7 @@ ColumnLayout {
             Flow {
                 visible: !backend.usbReadActive
                 Layout.fillWidth: true; spacing: 4
-                Repeater { model: backend.selected<4?4:8; ConsoleCheck { required property int index; property int target: backend.selected<4?index:index+4; text: backend.selected<4?'IN '+(index+1):'OUT '+(index+1); checked: backend.links[target]; onClicked: backend.link(target,checked) } }
+                Repeater { model: backend.selected<4?4:8; ConsoleCheck { required property int index; property int target: backend.selected<4?index:index+4; objectName: 'offline_link_member_'+target; text: backend.selected<4?'IN '+(index+1):'OUT '+(index+1); enabled: target!==backend.selected; checked: target===backend.selected || backend.links[target]; onClicked: backend.link(target,checked) } }
             }
             ConsoleButton { objectName: 'channel_link_edit'; visible: backend.usbReadActive; enabled: backend.usbControlReady && !backend.usbControlPending; text: 'Link channels…'; onClicked: root.linkRequested() }
             ConsoleButton { text: 'Copy channel settings…'; onClicked: root.copyRequested() }

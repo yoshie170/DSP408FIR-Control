@@ -15,9 +15,10 @@ Rectangle {
     height: compact ? 66 : 68
     color: selected ? Theme.color('#143649', backend.lightTheme) : Theme.color('#101e28', backend.lightTheme); radius: 6
     border.color: selected ? Theme.color('#079acb', backend.lightTheme) : Theme.color('#2c414e', backend.lightTheme)
-    Rectangle { objectName: 'link_rail_'+root.channelIndex; visible: root.linkData.linked; x: 1; y: 8; width: 2; height: parent.height-16; radius: 1; color: Theme.color(root.linkData.color,backend.lightTheme) }
+    LinkRail { objectName: 'link_rail_'+root.channelIndex; channelIndex: root.channelIndex; rowGap: root.compact?5:6; width: 12; height: parent.height }
     RowLayout {
         anchors.fill: parent; anchors.margins: 4; spacing: 5
+        anchors.leftMargin: 14
         ColumnLayout {
             Layout.fillWidth: true; spacing: 1
             RowLayout {
@@ -29,7 +30,6 @@ Rectangle {
                 checked: root.selected; onClicked: backend.select(root.channelIndex)
                 ToolTip.visible: hovered; ToolTip.text: root.channelData.name
               }
-              LinkBadge { objectName: 'link_badge_'+root.channelIndex; info: root.linkData; Layout.preferredWidth: implicitWidth; Layout.preferredHeight: 16 }
             }
             RowLayout {
                 Layout.fillWidth: true; spacing: 3

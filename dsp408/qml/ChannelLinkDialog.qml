@@ -8,7 +8,7 @@ ConsoleDialog {
     width: Math.min(540,parent.width-32); modal: true; title: 'Link channels'
     property var members: []
     property int selected: 0
-    function openFor() { selected=backend.selected; members=backend.channelLinkMembers.slice(); open() }
+    function openFor() { selected=backend.selected; members=backend.channelLinkMembers.slice(); if(members.indexOf(selected)<0)members.push(selected); open() }
     contentItem: ColumnLayout {
         spacing: 14
         Label { text: 'Choose channels to control together.'; wrapMode: Text.WordWrap; Layout.fillWidth: true }

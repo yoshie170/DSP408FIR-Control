@@ -1613,8 +1613,12 @@ class Controller(QObject):
         if self.editingLocked:return
         if self.usbReadActive:return
         if 0<=index<12:
+            if (index<4)!=(self._selected<4) or index==self._selected:return
             if hasattr(self.model,'device_link_masks'):del self.model.device_link_masks
-            self._software_bypass.clear();self.model.links[index]=value;self.notify('Linked edits are local DEMO only; FIR and names remain independent')
+            self._software_bypass.clear();self.model.links[index]=value
+            scope=range(4) if self._selected<4 else range(4,12)
+            self.model.links[self._selected]=any(self.model.links[i] for i in scope if i!=self._selected)
+            self.notify('Linked edits are local DEMO only; FIR and names remain independent')
     @Slot(int)
     def copyTo(self,target):
         if self.editingLocked:return
