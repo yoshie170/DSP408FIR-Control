@@ -16,7 +16,7 @@ Rectangle {
     color: 'transparent'
     Rectangle { x: 12; width: parent.width-12; height: parent.height; radius: 6
         color: root.selected ? Theme.color('#143649', backend.lightTheme) : Theme.color('#101e28', backend.lightTheme)
-        border.color: root.selected ? Theme.color('#079acb', backend.lightTheme) : Theme.color('#2c414e', backend.lightTheme)
+        border.color: root.selected ? Theme.color('#079acb', backend.lightTheme) : root.linkData.linked ? (backend.lightTheme?'#91bdb9':'#355b62') : Theme.color('#2c414e', backend.lightTheme)
     }
     LinkRail { objectName: 'link_rail_'+root.channelIndex; channelIndex: root.channelIndex; rowGap: root.compact?5:6; width: 10; height: parent.height }
     RowLayout {
