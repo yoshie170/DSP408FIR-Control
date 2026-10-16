@@ -56,7 +56,8 @@ Item {
                     var mid=root.height/2+root.rowGap/2;
                     var top=root.channelIndex===segment.first;
                     var bottom=root.channelIndex===segment.last;
-                    var x=8.5+segment.lane*2;var tip=Math.max(12,x+2);var bend=Math.min(3,tip-x);
+                    // Leave a little air between the glowing rail and the card edge.
+                    var x=5.5+segment.lane*2;var tip=Math.max(9,x+2);var bend=Math.min(3,tip-x);
                     ctx.strokeStyle=segment.accent;ctx.lineWidth=1.75;
                     ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
                     if(top) {
