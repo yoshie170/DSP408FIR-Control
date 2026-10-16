@@ -1,0 +1,22 @@
+DSP408 Control — third-party components
+Copyright © 2026 Łukasz Białas · https://gremium.tech
+
+Components retain their original copyrights and licenses.
+Qt/PySide6 are distributed as separate shared libraries.
+The application does not alter these libraries.
+
+PySide6 6.12.0: LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+PySide6_Essentials 6.12.0: LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+PySide6_Addons 6.12.0: LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+shiboken6 6.12.0: LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+hidapi 0.15.0: See included license
+PyInstaller 6.22.3: GPLv2-or-later with a special exception which allows to use PyInstaller to build and distribute non-free programs (including commercial ones)
+
+Python: 3.14.8
+Qt/PySide sources: https://code.qt.io/cgit/pyside/pyside-setup.git/ (tag v6.12.0)
+Qt sources: https://code.qt.io/cgit/qt/qtbase.git/ (tag v6.12.0)
+HIDAPI wrapper: https://github.com/trezor/cython-hidapi/tree/0.15.0
+PyInstaller: https://github.com/pyinstaller/pyinstaller/tree/v6.22.3
+Qt for Python licensing: https://doc.qt.io/qtforpython-6/licenses.html
+LGPL/GPL texts: https://www.gnu.org/licenses/
+PyInstaller bootloader distribution exception is in PyInstaller/COPYING.txt.

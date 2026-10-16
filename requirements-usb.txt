@@ -1,0 +1,2 @@
+# Optional Windows USB read connection; DEMO works without this dependency.
+hidapi==0.15.0

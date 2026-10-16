@@ -1,0 +1,4 @@
+# Windows release toolchain; not needed to run the source app.
+-r requirements.txt
+-r requirements-usb.txt
+PyInstaller==6.22.3

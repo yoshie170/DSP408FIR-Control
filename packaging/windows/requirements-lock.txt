@@ -1,0 +1,15 @@
+# Tested Windows x64 / Python 3.14.8 build environment for 0.9.0.
+PySide6==6.12.0
+PySide6_Essentials==6.12.0
+PySide6_Addons==6.12.0
+PySide6_Pdf==6.12.0.140
+PySide6_WebEngine==6.12.0.140
+shiboken6==6.12.0
+hidapi==0.15.0
+PyInstaller==6.22.3
+pyinstaller-hooks-contrib==2026.8
+altgraph==0.17.5
+packaging==26.3
+pefile==2024.8.26
+pywin32-ctypes==0.2.3
+setuptools==84.0.0
