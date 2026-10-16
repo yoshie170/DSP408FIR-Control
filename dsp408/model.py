@@ -277,6 +277,43 @@ class DeviceModel:
             group[local]=deepcopy(group[local])
         return clone
 
+    def link_masks(self):
+        from dsp408.channel_link import self_mask,topology
+        values=getattr(self,'device_link_masks',None)
+        if values is None:
+            values=[self_mask(i) for i in range(12)]
+            for scope in (range(4),range(4,12)):
+                group=[i for i in scope if self.links[i]]
+                if len(group)>1:
+                    for i in group:values[i]=sum(self_mask(t) for t in group) if i==group[0] else 0
+        topology(values)
+        return tuple(values)
+
+    def with_link_group(self,selected,members):
+        """Offline equivalent of native group membership/copy semantics; no wire I/O."""
+        from dsp408.channel_link import topology,members_for,self_mask
+        if type(selected) is not int or not 0<=selected<12:raise ValueError('Invalid channel')
+        if not isinstance(members,(list,tuple)) or not members or any(type(i) is not int or not 0<=i<12 or (i<4)!=(selected<4) for i in members):raise ValueError('Choose channels from one input/output group')
+        wanted=tuple(sorted(set(members)))
+        if len(wanted)!=len(members) or selected not in wanted:raise ValueError('Include the selected channel once')
+        old=self.link_masks()
+        if members_for(old,selected)==wanted:raise ValueError('Link group has not changed')
+        groups=[tuple(i for i in g if i not in wanted) for g in topology(old)]
+        groups=[g for g in groups if g]+[wanted]
+        clone=DeviceModel.from_dict(self.to_dict());values=[0]*12;copies=[]
+        for group in groups:
+            for i in group:values[i]=sum(self_mask(t) for t in group) if i==group[0] else 0
+            source=group[0]
+            for target in group[1:]:
+                if target in members_for(old,source):continue
+                name=clone.channels[target].name
+                dest=deepcopy(clone.channels[source]);dest.name=name
+                (clone.inputs if target<4 else clone.outputs)[target if target<4 else target-4]=dest
+                copies.append((source,target))
+        clone.device_link_masks=tuple(values);clone.links=[False]*12
+        clone.validate()
+        return clone,tuple(copies)
+
     def set_channel(self,index,key,value,band=-1):
         """Validate on a copy, then apply atomically, including same-group DEMO links."""
         if type(index) is not int or not 0<=index<12: raise ValueError('Invalid channel')

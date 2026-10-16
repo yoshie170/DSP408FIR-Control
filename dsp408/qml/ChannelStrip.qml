@@ -13,12 +13,15 @@ Rectangle {
     property bool gainAllowed: { backend.revision; backend.usbGainReady; return backend.gainEditingAllowed(channelIndex) }
     property bool limitedGain: backend.usbGainMode && channelIndex===0
     height: compact ? 66 : 68
-    color: selected ? Theme.color('#143649', backend.lightTheme) : Theme.color('#101e28', backend.lightTheme); radius: 6
-    border.color: selected ? Theme.color('#079acb', backend.lightTheme) : Theme.color('#2c414e', backend.lightTheme)
-    LinkRail { objectName: 'link_rail_'+root.channelIndex; channelIndex: root.channelIndex; rowGap: root.compact?5:6; width: 12; height: parent.height }
+    color: 'transparent'
+    Rectangle { x: 12; width: parent.width-12; height: parent.height; radius: 6
+        color: root.selected ? Theme.color('#143649', backend.lightTheme) : Theme.color('#101e28', backend.lightTheme)
+        border.color: root.selected ? Theme.color('#079acb', backend.lightTheme) : Theme.color('#2c414e', backend.lightTheme)
+    }
+    LinkRail { objectName: 'link_rail_'+root.channelIndex; channelIndex: root.channelIndex; rowGap: root.compact?5:6; width: 10; height: parent.height }
     RowLayout {
         anchors.fill: parent; anchors.margins: 4; spacing: 5
-        anchors.leftMargin: 14
+        anchors.leftMargin: 17
         ColumnLayout {
             Layout.fillWidth: true; spacing: 1
             RowLayout {

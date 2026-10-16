@@ -156,6 +156,12 @@ def to_bytes(model):
         apply_file_packet(doc,frame(p.command,p.payload))
         if p.command==0x4B and p.payload[1]!=4:
             off=32768+(p.payload[0]-4)*4096;bank[off:off+4096]=b'\xff'*4096
+    # File-only topology: independent records above have already been encoded.
+    # Never send these raw RAM masks as a command or emulate firmware flash copy.
+    from dsp408.channel_link import mask_offset,validate_group_state
+    for ch,value in enumerate(model.link_masks()):
+        at=mask_offset(ch);doc.data[at:at+2]=value.to_bytes(2,'little')
+    validate_group_state(bytes(doc.data))
     from dsp408.fir_usb_import import resource_usage
     resource_usage(bytes(doc.data))  # Counts include the implicit FF identity.
     result=MAGIC+bytes(doc.data[2:])+bytes(bank)+b'\r\n'

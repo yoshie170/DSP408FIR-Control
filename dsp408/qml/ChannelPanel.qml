@@ -62,14 +62,9 @@ ColumnLayout {
                 ConsoleCheck { text: 'Invert polarity (180°)'; checked: root.currentData.polarity_inverted; onClicked: backend.edit(backend.selected,'polarity_inverted',checked,-1) }
             }
             Label { text: 'LINK · same channel group'; color: Theme.color('#9ab5c6', backend.lightTheme); font.bold: true }
-            Flow {
-                visible: !backend.usbReadActive
-                Layout.fillWidth: true; spacing: 4
-                Repeater { model: backend.selected<4?4:8; ConsoleCheck { required property int index; property int target: backend.selected<4?index:index+4; objectName: 'offline_link_member_'+target; text: backend.selected<4?'IN '+(index+1):'OUT '+(index+1); enabled: target!==backend.selected; checked: target===backend.selected || backend.links[target]; onClicked: backend.link(target,checked) } }
-            }
-            ConsoleButton { objectName: 'channel_link_edit'; visible: backend.usbReadActive; enabled: backend.usbControlReady && !backend.usbControlPending; text: 'Link channels…'; onClicked: root.linkRequested() }
+            ConsoleButton { objectName: 'channel_link_edit'; enabled: !backend.usbReadActive || (backend.usbControlReady && !backend.usbControlPending); text: 'Link channels…'; onClicked: root.linkRequested() }
             ConsoleButton { text: 'Copy channel settings…'; onClicked: root.copyRequested() }
-            Label { objectName: 'channel_link_status'; text: backend.usbReadActive?backend.channelLinkMembers.map(function(i){return i<4?'IN '+String.fromCharCode(65+i):'OUT '+(i-3)}).join(' + '):'Linked DEMO edits · channel names and FIR remain independent'; color: Theme.color('#7697aa', backend.lightTheme); font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Label { objectName: 'channel_link_status'; text: backend.channelLinkMembers.map(function(i){return i<4?'IN '+String.fromCharCode(65+i):'OUT '+(i-3)}).join(' + '); color: Theme.color('#7697aa', backend.lightTheme); font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
     }
 }

@@ -46,12 +46,12 @@ ApplicationWindow {
             Label { text: backend.channelLinkReview.members || ''; font.bold: true; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Label { text: backend.channelLinkReview.unlink?'Unlink selected channel.':'Source: '+(backend.channelLinkReview.source || ''); wrapMode: Text.WordWrap; Layout.fillWidth: true }
             Label { text: (backend.channelLinkReview.copies || []).join('\n'); visible: text.length>0; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-            Label { text: 'Joining copies channel settings and FIR. Names and output routing stay independent. Channels are briefly muted; previous settings are not restored by unlinking.'; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Label { text: 'Joining copies channel settings and FIR. Names and output routing stay independent. '+(backend.usbReadActive?'Channels are briefly muted. ':'Changes apply to the offline configuration only. ')+'Previous settings are not restored by unlinking.'; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             RowLayout {
                 Layout.topMargin: 8; Layout.bottomMargin: 8; Layout.fillWidth: true
                 Item { Layout.fillWidth: true }
                 ConsoleButton { text: 'Cancel'; onClicked: backend.cancelChannelLink() }
-                ConsoleButton { objectName: 'channel_link_apply'; text: 'Apply Link'; enabled: backend.usbControlReady && !backend.usbControlPending; onClicked: backend.applyChannelLink() }
+                ConsoleButton { objectName: 'channel_link_apply'; text: 'Apply Link'; enabled: !backend.usbReadActive || (backend.usbControlReady && !backend.usbControlPending); onClicked: backend.applyChannelLink() }
             }
         }
     }

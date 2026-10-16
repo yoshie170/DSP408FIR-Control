@@ -492,7 +492,7 @@ class ParameterService:
                 raw,result=operation.run_import(prs);metadata={}
             else:raw,metadata,result=operation.run(slot,self.expected,store[1],store[2]) if store else operation.run(slot)
             self.expected=raw
-            self.observe_fir_bank(bytes.fromhex(result['bank_hex']) if result.get('operation') in ('fir_import','output_fir','channel_link','bank_backup','bank_restore') or result.get('full_prs') else None)
+            self.observe_fir_bank(bytes.fromhex(result['bank_hex']) if result.get('bank_hex') is not None and (result.get('operation') in ('fir_import','output_fir','channel_link','bank_backup','bank_restore') or result.get('full_prs')) else None)
             self.scrub=None;self.next_scrub=float('inf');self.packets=[];self.planned_generation=-1
             self.dirty_blocks.clear();self.dirty_paths.clear();self.dirty_commands.clear()
             try:_,model=state_model(raw)
@@ -500,7 +500,7 @@ class ParameterService:
                 self.ready=False;self.wanted=None;self.status(f'Preset {action} complete; channel control locked: '+str(error))
             else:
                 self.wanted=model.to_dict();self.ready=True
-                self.status('Preset bank restored · current configuration unchanged' if bank_restore else 'Preset bank backup saved · current configuration unchanged' if bank_backup else 'Configuration and FIR imported · full readback verified' if full_prs else 'Channel Link applied · parameters and storage checked' if channel_link else 'Output FIR crossover applied · full bank and parameters verified' if output_fir else 'Input FIR complete · full bank and parameters verified' if fir_import else 'IN A FIR256 trial complete · parameters and full storage verified' if fir else 'PRS parameters imported · unchanged FIR verified' if prs else f'P{slot:02d} '+('saved' if store else 'loaded')+' · full parameter readback verified')
+                self.status('Preset bank restored · current configuration unchanged' if bank_restore else 'Preset bank backup saved · current configuration unchanged' if bank_backup else 'Configuration and FIR imported · full readback verified' if full_prs else 'Channel Link applied · parameters checked' if channel_link else 'Output FIR crossover applied · full bank and parameters verified' if output_fir else 'Input FIR complete · full bank and parameters verified' if fir_import else 'IN A FIR256 trial complete · parameters and full storage verified' if fir else 'PRS parameters imported · unchanged FIR verified' if prs else f'P{slot:02d} '+('saved' if store else 'loaded')+' · full parameter readback verified')
             if metadata:self.preset_metadata(metadata)
             if bank_restore:self.preset_metadata(result['metadata'])
             if not (bank_backup or bank_restore):self.configuration(raw);self.confirmed(raw,self.generation)

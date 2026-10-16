@@ -32,7 +32,7 @@ ConsoleDialog {
             Layout.topMargin: 8; Layout.bottomMargin: 8; Layout.fillWidth: true
             Item { Layout.fillWidth: true }
             ConsoleButton { text: 'Cancel'; onClicked: dialog.close() }
-            ConsoleButton { objectName: 'channel_link_review'; text: 'Review…'; enabled: backend.usbControlReady && !backend.usbControlPending; onClicked: { dialog.close(); backend.reviewChannelLink(dialog.members) } }
+            ConsoleButton { objectName: 'channel_link_review'; text: 'Review…'; enabled: !backend.usbReadActive || (backend.usbControlReady && !backend.usbControlPending); onClicked: { dialog.close(); backend.reviewChannelLink(dialog.members) } }
         }
     }
 }

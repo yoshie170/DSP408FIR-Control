@@ -549,11 +549,12 @@ class Controller(QObject):
             self.notify('Preset bank restored · current configuration unchanged · backup: '+value['backup_path']);return
         self._usb_fir_bank=None;self._usb_fir_report=None;self._fir_cache=(None,[])
         if value.get('operation') in ('fir_import','output_fir','channel_link') or value.get('full_prs'):
-            self._usb_fir_received(bytes.fromhex(value['bank_hex']))
+            if value.get('bank_hex') is not None:self._usb_fir_received(bytes.fromhex(value['bank_hex']))
             if value.get('full_prs'):
                 self.notify('PRS configuration and FIR imported · full readback verified');return
             if value['operation']=='channel_link':
-                self.notify('Channel Link applied · parameters and FIR storage checked');return
+                self._ethernet_fir_preview=None
+                self.notify('Channel Link applied · parameters checked; FIR handled by DSP');return
             if value['operation']=='output_fir':
                 self.notify('Output FIR crossover applied · full parameters and storage verified');return
             self.notify('Input FIR cleared · bypass on · full storage verified' if value.get('clear') else 'Input FIR applied · full storage, parameters and final Mute verified');return
@@ -1170,7 +1171,7 @@ class Controller(QObject):
     def applyBankRestore(self):
         if not self.bankBackupAvailable or self._bank_restore_candidate is None:return False
         p,path=self._bank_restore_candidate
-        if p.state!=self._usb_raw_state or p.bank!=self._usb_fir_bank:
+        if p.state!=self._usb_raw_state or (p.bank is not None and p.bank!=self._usb_fir_bank):
             self.notify('DSP changed since review; review bank restore again');return False
         try:
             if not self._usb_worker.request_bank_restore(p.state,p.bank,p.catalog,p.active,p.names,p.records,p.banks,path):return False
@@ -1517,7 +1518,7 @@ class Controller(QObject):
     @Property('QVariantList',notify=changed)
     def channelLinkMembers(self):
         from dsp408.channel_link import members_for,masks
-        values=masks(self._usb_raw_state) if self._usb_raw_state is not None else getattr(self.model,'device_link_masks',None)
+        values=masks(self._usb_raw_state) if self.usbReadActive and self._usb_raw_state is not None else self.model.link_masks()
         if values is None:return [self._selected]
         try:return list(members_for(values,self._selected))
         except ValueError:return [self._selected]
@@ -1529,12 +1530,21 @@ class Controller(QObject):
     @Slot('QVariantList',result=bool)
     def reviewChannelLink(self,members):
         self._channel_link_candidate=None;self._channel_link_review={}
+        if not self.usbReadActive:
+            if self.editingLocked:return False
+            try:
+                clone,copies=self.model.with_link_group(self._selected,members)
+                self._channel_link_candidate={'selected':self._selected,'before':self.model.to_dict(),'after':clone.to_dict()}
+                label=lambda i:('IN '+chr(65+i) if i<4 else 'OUT '+str(i-3))+' · '+self.model.channels[i].name
+                self._channel_link_review={'members':', '.join(label(i) for i in sorted(members)),
+                    'source':label(min(members)),'copies':[label(a)+' → '+label(b) for a,b in copies],
+                    'unlink':len(members)==1,'offline':True}
+                self.notify();return True
+            except (ValueError,TypeError) as error:self.notify(str(error));return False
         if not self.usbControlReady or self.usbControlPending:return False
-        if self._usb_fir_bank is None:
-            self._prepare_current_fir('channel_link',(list(members),));return False
         try:
             from dsp408.channel_link import prepare_link
-            p=prepare_link(self._usb_raw_state,self._usb_fir_bank,self._selected,members)
+            p=prepare_link(self._usb_raw_state,None,self._selected,members)
             self._channel_link_candidate=p
             label=lambda i:('IN '+chr(65+i) if i<4 else 'OUT '+str(i-3))+' · '+self.model.channels[i].name
             self._channel_link_review={'members':', '.join(label(i) for i in p.members),
@@ -1545,8 +1555,13 @@ class Controller(QObject):
     @Slot(result=bool)
     def applyChannelLink(self):
         p=getattr(self,'_channel_link_candidate',None)
+        if isinstance(p,dict):
+            if self.usbReadActive or self.editingLocked or p['selected']!=self._selected or p['before']!=self.model.to_dict():
+                self.cancelChannelLink();return False
+            self.model=DeviceModel.from_dict(p['after']);self._software_bypass.clear()
+            self.cancelChannelLink();return True
         if p is None or not self.usbControlReady or self.usbControlPending or p.selected!=self._selected:return False
-        if p.state!=self._usb_raw_state or p.bank!=self._usb_fir_bank:
+        if p.state!=self._usb_raw_state or (p.bank is not None and p.bank!=self._usb_fir_bank):
             self.cancelChannelLink();self.notify('DSP changed; review channel Link again');return False
         try:
             if not self._usb_worker.request_link(p.state,p.bank,p.selected,p.members):return False
@@ -2028,7 +2043,11 @@ class Controller(QObject):
             c=self.model.channels[self._selected]
             if self._selected>=4 and (c.crossover_mode!='FIR' or c.fir.mode!='External FIR'):raise ValueError('Output import: select FIR crossover mode and External FIR type first')
             maximum=512 if self._selected<4 else 1024;values=parse_coefficients(path,maximum)
-            clone=DeviceModel.from_dict(self.model.to_dict());f=clone.channels[self._selected].fir;f.path=path;f.coefficients=values;f.mode='External FIR';clone.validate();self.model=clone;self.notify(f'{len(values)} coefficients imported locally; no upload');return True
+            clone=DeviceModel.from_dict(self.model.to_dict())
+            from dsp408.channel_link import members_for
+            for target in members_for(clone.link_masks(),self._selected):
+                f=clone.channels[target].fir;f.path=path;f.coefficients=list(values);f.mode='External FIR'
+            clone.validate();self.model=clone;self.notify(f'{len(values)} coefficients imported locally; no upload');return True
         except (ValueError,OSError,UnicodeError) as e:self.notify(str(e));return False
     @Slot()
     def importFIR(self):
@@ -2039,7 +2058,11 @@ class Controller(QObject):
     def clearFIR(self):
         if self.editingLocked:return
         if self.usbReadActive:return
-        c=self.model.channels[self._selected];c.fir.coefficients=[];c.fir.path='';c.fir.bypass=True;self.notify('FIR coefficients removed locally')
+        from dsp408.channel_link import members_for
+        clone=DeviceModel.from_dict(self.model.to_dict())
+        for target in members_for(clone.link_masks(),self._selected):
+            c=clone.channels[target];c.fir.coefficients=[];c.fir.path='';c.fir.bypass=True
+        clone.validate();self.model=clone;self.notify('FIR coefficients removed locally')
     @Slot(int)
     def storeSlot(self,slot):
         if self.editingLocked:return
