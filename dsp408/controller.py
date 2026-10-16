@@ -1503,17 +1503,16 @@ class Controller(QObject):
         elif self.usbReadActive:groups=()
         else:groups=tuple(tuple(i for i in scope if self.model.links[i]) for scope in (range(4),range(4,12)))
         result=[{'linked':False,'members':[],'label':'','description':'','color':'#40d9c4'} for _ in range(12)]
-        palette=('#40d9c4','#aa99ef','#f9cf42','#ff89c5',
-                 '#55c8f0','#f0a66b','#a8d875','#e98f99',
-                 '#73b7ef','#c3a5df','#73d2ac','#e6bd79')
-        for group in groups:
-            if len(group)<2:continue
+        # At most six disjoint groups. Assign distinct hues to actual groups,
+        # rather than nearby pastel shades based on the owner's channel number.
+        palette=('#37dab5','#ffb24d','#bb8dff','#9dd957','#ff739c','#559fff')
+        for group_index,group in enumerate(g for g in groups if len(g)>1):
             short=lambda i:chr(65+i) if i<4 else str(i-3)
             labels=[('IN ' if i<4 else 'OUT ')+short(i) for i in group]
             label='+'.join(short(i) for i in group) if len(group)<=4 else str(len(group))+' CH'
             info={'linked':True,'members':list(group),'label':label,
                 'description':('Linked: ' if native else 'Linked DEMO edits: ')+' + '.join(labels),
-                'color':palette[group[0]%len(palette)]}
+                'color':palette[group_index]}
             for i in group:result[i]=dict(info)
         return result
 
