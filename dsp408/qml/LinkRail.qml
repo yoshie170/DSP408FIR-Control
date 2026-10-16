@@ -57,7 +57,7 @@ Item {
                     var top=root.channelIndex===segment.first;
                     var bottom=root.channelIndex===segment.last;
                     var x=8.5+segment.lane*2;var tip=Math.max(12,x+2);var bend=Math.min(3,tip-x);
-                    ctx.strokeStyle=segment.accent;ctx.lineWidth=1.25;
+                    ctx.strokeStyle=segment.accent;ctx.lineWidth=1.75;
                     ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
                     if(top) {
                         ctx.moveTo(tip,mid);ctx.lineTo(x+bend,mid);
@@ -67,15 +67,18 @@ Item {
                         ctx.lineTo(x,mid-bend);ctx.quadraticCurveTo(x,mid,x+bend,mid);ctx.lineTo(tip,mid);
                     } else ctx.lineTo(x,height);
                     if(segment.member && !top && !bottom) {ctx.moveTo(x,mid);ctx.lineTo(tip,mid);}
+                    // Reuse the same path for a restrained glow under the solid rail.
+                    ctx.save();ctx.globalAlpha=0.065;ctx.lineWidth=6;ctx.stroke();
+                    ctx.globalAlpha=0.14;ctx.lineWidth=3.5;ctx.stroke();ctx.restore();
                     ctx.stroke();
                     var cy=mid+((segment.first+segment.last)/2-root.channelIndex)*(root.height+root.rowGap)+segment.badgeOffset;
                     if(cy+12>=0 && cy-12<=height) {
                         // Keep the badge within the fixed gutter, including crossing groups.
                         ctx.save();ctx.beginPath();ctx.rect(0,0,17,height);ctx.clip();ctx.translate(8.5,cy);
                         // Small, low opacity rings provide a restrained halo, no shader.
-                        ctx.strokeStyle=segment.accent;ctx.globalAlpha=0.045;ctx.lineWidth=3;
+                        ctx.strokeStyle=segment.accent;ctx.globalAlpha=0.08;ctx.lineWidth=3;
                         ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.stroke();
-                        ctx.globalAlpha=0.09;ctx.lineWidth=2;
+                        ctx.globalAlpha=0.15;ctx.lineWidth=2;
                         ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.stroke();
                         ctx.globalAlpha=1;ctx.fillStyle='#10232f';ctx.strokeStyle=segment.accent;ctx.lineWidth=1;
                         ctx.beginPath();ctx.arc(0,0,8.25,0,Math.PI*2);ctx.fill();ctx.stroke();
