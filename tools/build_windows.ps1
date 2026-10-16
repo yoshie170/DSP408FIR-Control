@@ -28,11 +28,11 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'License collection failed.' }
     & $Python -m PyInstaller --noconfirm --distpath $OutputDirectory --workpath work\release-v147\build-final DSP408_Control.spec
     if ($LASTEXITCODE -ne 0) { throw 'Application build failed.' }
-    $dspAppSource = Join-Path $OutputDirectory 'DSP408 Control'
+    $dspAppSource = Join-Path $OutputDirectory 'DSP408FIR Control'
     $dspSetupOutput = Join-Path $OutputDirectory 'installer'
     & $IsccPath "/DAppSource=$dspAppSource" "/DSetupOutput=$dspSetupOutput" packaging\windows\DSP408_Control.iss
     if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed.' }
-    $dspSetupFile = Join-Path $dspSetupOutput 'DSP408-Control-0.9.0-Setup.exe'
+    $dspSetupFile = Join-Path $dspSetupOutput 'DSP408FIR-Control-0.9.0-Setup.exe'
     $dspSetupHash = (Get-FileHash -LiteralPath $dspSetupFile -Algorithm SHA256).Hash.ToLowerInvariant()
     Set-Content -LiteralPath "$dspSetupFile.sha256" -Value "$dspSetupHash  $([IO.Path]::GetFileName($dspSetupFile))" -Encoding ascii
     Write-Host "Installer: $dspSetupFile"

@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.model = DeviceModel()
-        self.setWindowTitle('DSP408 Control — DEMO')
+        self.setWindowTitle('DSP408FIR Control - DEMO')
         self.resize(1280, 790)
         root = QWidget(); self.setCentralWidget(root)
         outer = QVBoxLayout(root); outer.setContentsMargins(20, 18, 20, 16); outer.setSpacing(15)

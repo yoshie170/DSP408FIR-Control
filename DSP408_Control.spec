@@ -20,7 +20,7 @@ for entry in a.binaries:
     if not any(Path(entry[1]).resolve().is_relative_to(folder) for folder in allowed_roots):
         raise ValueError('Unexpected external build dependency: '+entry[1])
 pyz=PYZ(a.pure)
-exe=EXE(pyz,a.scripts,[],exclude_binaries=True,name='DSP408 Control',
+exe=EXE(pyz,a.scripts,[],exclude_binaries=True,name='DSP408FIR Control',
         debug=False,strip=False,upx=False,console=os.environ.get('DSP408_BUILD_CONSOLE')=='1',icon=str(icons/'dsp408.ico'),
         version=str(root/'packaging'/'windows'/'version_info.txt'))
-coll=COLLECT(exe,a.binaries,a.datas,strip=False,upx=False,name='DSP408 Control')
+coll=COLLECT(exe,a.binaries,a.datas,strip=False,upx=False,name='DSP408FIR Control')

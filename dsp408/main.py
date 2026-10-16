@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--theme',choices=('dark','light'),help='Preview theme without saving the preference')
     parser.add_argument('--connection-dialog',action='store_true');args=parser.parse_args()
     QQuickStyle.setStyle('Basic');app=QApplication(sys.argv)
-    app.setApplicationName('DSP408 Control');app.setWindowIcon(application_icon())
+    app.setApplicationName('DSP408FIR Control');app.setWindowIcon(application_icon())
     for font in ('segoeui.ttf','segoeuib.ttf'):
         font_path=Path('C:/Windows/Fonts')/font
         if font_path.exists(): QFontDatabase.addApplicationFont(str(font_path))

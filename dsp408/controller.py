@@ -1503,7 +1503,9 @@ class Controller(QObject):
         elif self.usbReadActive:groups=()
         else:groups=tuple(tuple(i for i in scope if self.model.links[i]) for scope in (range(4),range(4,12)))
         result=[{'linked':False,'members':[],'label':'','description':'','color':'#40d9c4'} for _ in range(12)]
-        palette=('#40d9c4','#aa99ef','#f9cf42','#ff89c5')
+        palette=('#40d9c4','#aa99ef','#f9cf42','#ff89c5',
+                 '#55c8f0','#f0a66b','#a8d875','#e98f99',
+                 '#73b7ef','#c3a5df','#73d2ac','#e6bd79')
         for group in groups:
             if len(group)<2:continue
             short=lambda i:chr(65+i) if i<4 else str(i-3)

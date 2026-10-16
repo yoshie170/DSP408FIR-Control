@@ -1,4 +1,4 @@
-DSP408 Control — third-party components
+DSP408FIR Control - third-party components
 Copyright © 2026 Łukasz Białas · https://gremium.tech
 
 Components retain their original copyrights and licenses.

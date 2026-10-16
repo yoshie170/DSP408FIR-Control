@@ -58,8 +58,8 @@ def probe(executable,label):
 def verify():
     if not ctypes.windll.shell32.IsUserAnAdmin():
         raise RuntimeError('The Program Files installer test requires an elevated shell; no UAC prompt is started automatically')
-    setup=ROOT/'dist/installer/DSP408-Control-0.9.0-Setup.exe'
-    bundle=ROOT/'dist/DSP408 Control'
+    setup=ROOT/'dist/installer/DSP408FIR-Control-0.9.0-Setup.exe'
+    bundle=ROOT/'dist/DSP408FIR Control'
     destination=(WORK/'install-test').resolve()
     assert destination.is_relative_to(WORK.resolve()) and destination.parent==WORK.resolve()
     if registered():raise RuntimeError('Existing installation: do not replace it during verification')
@@ -73,7 +73,7 @@ def verify():
     else:preferences.write_text(expected_preferences,encoding='utf-8')
     preference_hash=digest(preferences)
     result={'scope':'Own build only, no DSP I/O; temporary all-users installation, no shortcuts',
-            'setup_sha256':digest(setup),'bundle_probe':probe(bundle/'DSP408 Control.exe','bundle')}
+            'setup_sha256':digest(setup),'bundle_probe':probe(bundle/'DSP408FIR Control.exe','bundle')}
     # Paths are individual arguments, never concatenated shell commands.
     run([setup,'/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/NOICONS','/TASKS=',
          f'/DIR={destination}',f'/LOG={WORK / "install.log"}'])
@@ -84,7 +84,7 @@ def verify():
             target=destination/source.relative_to(bundle)
             assert target.is_file() and digest(source)==digest(target), str(source)
         result['installed_files_verified']=len(files)
-        result['installed_probe']=probe(destination/'DSP408 Control.exe','installed')
+        result['installed_probe']=probe(destination/'DSP408FIR Control.exe','installed')
     finally:
         # Only uninstall the verified workspace installation, never another copy.
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,KEY,0,winreg.KEY_READ|winreg.KEY_WOW64_64KEY) as key:
@@ -92,9 +92,9 @@ def verify():
         assert Path(location).resolve()==destination
         run([destination/'unins000.exe','/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',f'/LOG={WORK / "uninstall.log"}'])
     for _ in range(30):
-        if not registered() and not (destination/'DSP408 Control.exe').exists():break
+        if not registered() and not (destination/'DSP408FIR Control.exe').exists():break
         time.sleep(.1)
-    assert not registered() and not (destination/'DSP408 Control.exe').exists()
+    assert not registered() and not (destination/'DSP408FIR Control.exe').exists()
     assert digest(preferences)==preference_hash
     result.update(uninstall_verified=True,user_preferences_preserved=True,physical_io=False)
     (WORK/'install-verification.json').write_text(json.dumps(result,indent=2),encoding='utf-8')

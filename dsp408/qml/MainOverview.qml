@@ -44,12 +44,20 @@ ColumnLayout {
                     required property int index
                     property var info: root.summaries[index]
                     property var live: root.activity[index]
+                    property var linkData: backend.channelLinks[index]
+                    property color linkAccent: Theme.color(linkData.color || '#40d9c4',backend.lightTheme)
                     width: parent.width; spacing: 3
                     Label { visible: channelRow.index===0 || channelRow.index===4; text: channelRow.index===0?'INPUTS':'OUTPUTS'; height: visible?16:0; color: Theme.color('#8faabc', backend.lightTheme); font.bold: true; font.pixelSize: 10 }
                     Rectangle {
                         width: parent.width; height: root.height>=750?46:32; radius: 4
                         color: backend.selected===channelRow.index?Theme.color('#173647', backend.lightTheme):channelRow.index%2?Theme.color('#12212b', backend.lightTheme):Theme.color('#0c1922', backend.lightTheme)
-                        border.color: backend.selected===channelRow.index?Theme.color('#148eb4', backend.lightTheme):Theme.color('#253c49', backend.lightTheme)
+                        border.color: channelRow.linkData.linked?Qt.rgba(channelRow.linkAccent.r,channelRow.linkAccent.g,channelRow.linkAccent.b,backend.selected===channelRow.index?0.65:0.35):backend.selected===channelRow.index?Theme.color('#148eb4', backend.lightTheme):Theme.color('#253c49', backend.lightTheme)
+                        Rectangle {
+                            objectName: 'overview_link_'+channelRow.index
+                            visible: channelRow.linkData.linked
+                            x: 1; y: 4; width: 2; height: parent.height-8; radius: 1
+                            color: channelRow.linkAccent; opacity: 0.75
+                        }
                         RowLayout {
                             anchors.fill: parent; anchors.margins: 4; spacing: 6
                             ConsoleButton {
@@ -57,7 +65,7 @@ ColumnLayout {
                                 highlightHover: true
                                 Layout.preferredWidth: root.width>=1150?170:110; implicitHeight: 24; text: channelRow.info.label+' · '+channelRow.info.name; font.pixelSize: root.width>=1150?12:10
                                 onClicked: root.openChannel(channelRow.index,0)
-                                ToolTip.visible: hovered; ToolTip.text: channelRow.info.name+'\nRouting: '+channelRow.info.routing+'\n'+channelRow.info.crossover+' · open channel controls'
+                                ToolTip.visible: hovered; ToolTip.text: channelRow.info.name+(channelRow.linkData.linked?'\n'+channelRow.linkData.description:'')+'\nRouting: '+channelRow.info.routing+'\n'+channelRow.info.crossover+' · open channel controls'
                                 contentItem: Text { text: parent.text; color: Theme.color('#d4e9f4', backend.lightTheme); font: parent.font; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
                             }
                             Item {

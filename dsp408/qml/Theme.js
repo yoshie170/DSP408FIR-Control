@@ -2,6 +2,14 @@
 
 // Original dark values remain unchanged; one shared light palette.
 var lightColors = {
+    "#55c8f0": "#087cad",
+    "#f0a66b": "#a15f20",
+    "#a8d875": "#537d28",
+    "#e98f99": "#a74f60",
+    "#73b7ef": "#326eaa",
+    "#c3a5df": "#7c56a0",
+    "#73d2ac": "#227a5d",
+    "#e6bd79": "#966a26",
     "#4b2e14": "#fff0de",
     "#ffb566": "#9c4d00",
     "#39c9e4": "#087cac",

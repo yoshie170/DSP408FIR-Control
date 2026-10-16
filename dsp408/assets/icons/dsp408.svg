@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 38 38">
-  <title>DSP408 Control</title>
+  <title>DSP408FIR Control</title>
   <rect x="0.5" y="0.5" width="37" height="37" rx="8.5" fill="#123445" stroke="#2987a6"/>
   <g fill="#49d9ec">
     <rect x="8.5" y="13" width="3" height="12" rx="1.5"/>

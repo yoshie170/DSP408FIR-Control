@@ -1,4 +1,4 @@
-# DSP408 Control — ikony
+# DSP408FIR Control - ikony
 
 Copyright © 2026 Łukasz Białas · [gremium.tech](https://gremium.tech).
 

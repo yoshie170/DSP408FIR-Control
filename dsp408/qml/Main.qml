@@ -6,7 +6,7 @@ ApplicationWindow {
     id: win
     property var currentData: backend.current
     visible: true; width: 1366; height: 768; minimumWidth: 1180; minimumHeight: 700
-    title: 'DSP408 Control — '+backend.connectionLabel
+    title: 'DSP408FIR Control - '+backend.connectionLabel
     color: Theme.color('#0b1319', backend.lightTheme)
     palette.window: Theme.color('#0b141c', backend.lightTheme); palette.windowText: Theme.color('#e3eef6', backend.lightTheme); palette.base: Theme.color('#13232f', backend.lightTheme); palette.text: Theme.color('#e3eef6', backend.lightTheme); palette.button: Theme.color('#213441', backend.lightTheme); palette.buttonText: Theme.color('#e3eef6', backend.lightTheme); palette.highlight: Theme.color('#087dab', backend.lightTheme); palette.highlightedText: '#ffffff'
     font.family: 'Segoe UI'; font.pixelSize: 12
@@ -116,13 +116,13 @@ ApplicationWindow {
         RowLayout {
             anchors.fill: parent; anchors.margins: 12; spacing: 10
             RowLayout {
-                objectName: 'app_brand'; spacing: 9; Layout.preferredWidth: 202
+                objectName: 'app_brand'; spacing: 9; Layout.preferredWidth: 246
                 Image { objectName: 'app_mark'; source: '../assets/icons/dsp408.svg'; sourceSize.width: 76; sourceSize.height: 76; Layout.preferredWidth: 38; Layout.preferredHeight: 38 }
                 Column {
                     spacing: 1
                     Row {
                         spacing: 7
-                        Label { id: brandName; text: 'DSP408'; font.pixelSize: 21; font.bold: true }
+                        Label { id: brandName; text: 'DSP408FIR'; font.pixelSize: 21; font.bold: true }
                         Label { text: 'CONTROL'; anchors.baseline: brandName.baseline; font.pixelSize: 10; font.letterSpacing: 1.3; color: Theme.color('#39c9e4',backend.lightTheme) }
                     }
                     Label { text: 't.racks FIR DSP 408'; color: Theme.color('#8ba5b7', backend.lightTheme); font.pixelSize: 10 }

@@ -8,7 +8,7 @@ from importlib.metadata import distribution
 def prepare(root):
     target=Path(root)/'dsp408/assets/licenses'
     target.mkdir(parents=True,exist_ok=True)
-    lines=['DSP408 Control — third-party components',
+    lines=['DSP408FIR Control - third-party components',
            'Copyright © 2026 Łukasz Białas · https://gremium.tech',
            '', 'Components retain their original copyrights and licenses.',
            'Qt/PySide6 are distributed as separate shared libraries.',
