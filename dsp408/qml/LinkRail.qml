@@ -3,105 +3,106 @@ import QtQuick.Controls
 import "Theme.js" as Theme
 Item {
     id: root
-    required property int channelIndex
-    property int rowGap: 6
+    required property var sourceView
+    required property var strips
+    property int firstChannel: 0
+    property int channelCount: 4
+    readonly property int gutterBleed: 7
+    readonly property real scrollY: sourceView.contentItem ? sourceView.contentItem.contentY : 0
+    readonly property point viewportOrigin: {
+        sourceView.x; sourceView.y; sourceView.parent.x; sourceView.parent.y;
+        return sourceView.mapToItem(parent,0,0);
+    }
+    x: viewportOrigin.x-gutterBleed; y: viewportOrigin.y
+    width: sourceView.width+gutterBleed; height: sourceView.height
+    clip: true; z: 2
     property var groups: {
-        var links=backend.channelLinks; var result=[];
-        var first=channelIndex<4?0:4; var end=channelIndex<4?4:12;
-        for(var i=first;i<end;i++) {
+        var links=backend.channelLinks;var result=[];
+        for(var i=firstChannel;i<firstChannel+channelCount;i++) {
             var info=links[i];
             if(info.linked && info.members[0]===i)result.push(info);
         }
         return result;
     }
+    function center(channel) {
+        var strip=strips.itemAt(channel-firstChannel);
+        if(!strip)return Qt.point(0,0);
+        // Explicit dependencies keep the overlay aligned on scroll and relayout.
+        scrollY;strip.x;strip.y;strip.height;viewportOrigin;
+        return strip.mapToItem(root,0,strip.height/2);
+    }
+    function repaint() { Qt.callLater(paint.requestPaint) }
+    onGroupsChanged: repaint()
+    onScrollYChanged: repaint()
+    onViewportOriginChanged: repaint()
+    onWidthChanged: repaint()
+    onHeightChanged: repaint()
+    Component.onCompleted: repaint()
+    Connections { target: root.strips; function onItemAdded() { root.repaint() } }
+    Connections { target: backend; function onThemeChanged() { root.repaint() } }
+    Canvas {
+        id: paint
+        anchors.fill: parent
+        onPaint: {
+            var ctx=getContext('2d');ctx.reset();
+            for(var n=0;n<root.groups.length;n++) {
+                var info=root.groups[n];var members=info.members;
+                var first=root.center(members[0]);var last=root.center(members[members.length-1]);
+                if(!first.x || last.y<=first.y)continue;
+                var lane=0;
+                for(var j=0;j<n;j++) {
+                    var prior=root.groups[j].members;
+                    if(prior[prior.length-1]>=members[0])lane++;
+                }
+                // The entire connection, including its badge, shares this axis.
+                var x=first.x+5.5-lane*Math.min(2,4/Math.max(1,root.groups.length-1));var tip=first.x+11;var r=3;
+                var accent=Theme.color(info.color,backend.lightTheme);
+                ctx.strokeStyle=accent;ctx.lineWidth=1.75;
+                ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
+                ctx.moveTo(tip,first.y);ctx.lineTo(x+r,first.y);
+                ctx.quadraticCurveTo(x,first.y,x,first.y+r);
+                ctx.lineTo(x,last.y-r);ctx.quadraticCurveTo(x,last.y,x+r,last.y);
+                ctx.lineTo(tip,last.y);
+                for(var k=1;k<members.length-1;k++) {
+                    var peer=root.center(members[k]);ctx.moveTo(x,peer.y);ctx.lineTo(tip,peer.y);
+                }
+                ctx.save();ctx.globalAlpha=0.065;ctx.lineWidth=6;ctx.stroke();
+                ctx.globalAlpha=0.14;ctx.lineWidth=3.5;ctx.stroke();ctx.restore();ctx.stroke();
+                var cy=(first.y+last.y)/2;var count=0;var rank=0;
+                for(var q=0;q<root.groups.length;q++) {
+                    var other=root.groups[q].members;
+                    if(other[0]+other[other.length-1]===members[0]+members[members.length-1]) {
+                        if(q<n)rank++;count++;
+                    }
+                }
+                cy+=(rank-(count-1)/2)*20;
+                ctx.save();ctx.translate(x,cy);
+                ctx.strokeStyle=accent;ctx.globalAlpha=0.08;ctx.lineWidth=3;
+                ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.stroke();
+                ctx.globalAlpha=0.15;ctx.lineWidth=2;
+                ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.stroke();
+                ctx.globalAlpha=1;ctx.fillStyle='#10232f';ctx.strokeStyle=accent;ctx.lineWidth=1;
+                ctx.beginPath();ctx.arc(0,0,8.25,0,Math.PI*2);ctx.fill();ctx.stroke();
+                ctx.rotate(-Math.PI/4);ctx.strokeStyle='#e0f6f4';ctx.lineWidth=1.1;
+                function link(left) {
+                    var top=-2.1;var w=7;var h=4.2;var rad=2.1;
+                    ctx.beginPath();ctx.moveTo(left+rad,top);ctx.lineTo(left+w-rad,top);
+                    ctx.quadraticCurveTo(left+w,top,left+w,top+rad);
+                    ctx.quadraticCurveTo(left+w,top+h,left+w-rad,top+h);
+                    ctx.lineTo(left+rad,top+h);ctx.quadraticCurveTo(left,top+h,left,top+rad);
+                    ctx.quadraticCurveTo(left,top,left+rad,top);ctx.stroke();
+                }
+                link(-5.5);link(-1.5);ctx.restore();
+            }
+        }
+    }
     Repeater {
         model: root.groups
         Item {
-            id: segment
             required property var modelData
-            required property int index
-            property bool member: modelData.members.indexOf(root.channelIndex)>=0
-            property int first: modelData.members[0]
-            property int last: modelData.members[modelData.members.length-1]
-            property color accent: Theme.color(modelData.color,backend.lightTheme)
-            // Reuse a rail for disjoint spans; crossing groups retain separate lanes.
-            property int lane: {
-                var n=0;
-                for(var i=0;i<index;i++) {
-                    var g=root.groups[i].members;
-                    if(g[g.length-1]>=first)n++;
-                }
-                return n;
-            }
-            property real badgeOffset: {
-                var center=(first+last)/2;var count=0;var rank=0;
-                for(var i=0;i<root.groups.length;i++) {
-                    var g=root.groups[i].members;
-                    if((g[0]+g[g.length-1])/2===center) {if(i<index)rank++;count++;}
-                }
-                return (rank-(count-1)/2)*20;
-            }
-            opacity: hover.hovered?1:0.9
-            visible: root.channelIndex>=first && root.channelIndex<=last
-            x: 0; width: root.width; height: root.height
-            Canvas {
-                id: curve
-                // Each row paints its own slice, including half of a badge in the gap.
-                // This keeps scrolling/clipping and every existing card rectangle intact.
-                y: -root.rowGap/2; width: 26; height: root.height+root.rowGap
-                onWidthChanged: requestPaint()
-                onHeightChanged: requestPaint()
-                onPaint: {
-                    var ctx=getContext('2d');ctx.reset();
-                    var mid=root.height/2+root.rowGap/2;
-                    var top=root.channelIndex===segment.first;
-                    var bottom=root.channelIndex===segment.last;
-                    // Leave a little air between the glowing rail and the card edge.
-                    var x=5.5+segment.lane*2;var tip=Math.max(9,x+2);var bend=Math.min(3,tip-x);
-                    ctx.strokeStyle=segment.accent;ctx.lineWidth=1.75;
-                    ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
-                    if(top) {
-                        ctx.moveTo(tip,mid);ctx.lineTo(x+bend,mid);
-                        ctx.quadraticCurveTo(x,mid,x,mid+bend);
-                    } else ctx.moveTo(x,0);
-                    if(bottom) {
-                        ctx.lineTo(x,mid-bend);ctx.quadraticCurveTo(x,mid,x+bend,mid);ctx.lineTo(tip,mid);
-                    } else ctx.lineTo(x,height);
-                    if(segment.member && !top && !bottom) {ctx.moveTo(x,mid);ctx.lineTo(tip,mid);}
-                    // Reuse the same path for a restrained glow under the solid rail.
-                    ctx.save();ctx.globalAlpha=0.065;ctx.lineWidth=6;ctx.stroke();
-                    ctx.globalAlpha=0.14;ctx.lineWidth=3.5;ctx.stroke();ctx.restore();
-                    ctx.stroke();
-                    var cy=mid+((segment.first+segment.last)/2-root.channelIndex)*(root.height+root.rowGap)+segment.badgeOffset;
-                    if(cy+12>=0 && cy-12<=height) {
-                        // Keep the badge within the fixed gutter, including crossing groups.
-                        ctx.save();ctx.beginPath();ctx.rect(0,0,17,height);ctx.clip();ctx.translate(8.5,cy);
-                        // Small, low opacity rings provide a restrained halo, no shader.
-                        ctx.strokeStyle=segment.accent;ctx.globalAlpha=0.08;ctx.lineWidth=3;
-                        ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.stroke();
-                        ctx.globalAlpha=0.15;ctx.lineWidth=2;
-                        ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.stroke();
-                        ctx.globalAlpha=1;ctx.fillStyle='#10232f';ctx.strokeStyle=segment.accent;ctx.lineWidth=1;
-                        ctx.beginPath();ctx.arc(0,0,8.25,0,Math.PI*2);ctx.fill();ctx.stroke();
-                        ctx.rotate(-Math.PI/4);ctx.strokeStyle='#e0f6f4';ctx.lineWidth=1.1;
-                        function link(left) {
-                            var top=-2.1;var w=7;var h=4.2;var r=2.1;
-                            ctx.beginPath();ctx.moveTo(left+r,top);ctx.lineTo(left+w-r,top);
-                            ctx.quadraticCurveTo(left+w,top,left+w,top+r);
-                            ctx.quadraticCurveTo(left+w,top+h,left+w-r,top+h);
-                            ctx.lineTo(left+r,top+h);ctx.quadraticCurveTo(left,top+h,left,top+r);
-                            ctx.quadraticCurveTo(left,top,left+r,top);ctx.stroke();
-                        }
-                        link(-5.5);link(-1.5);ctx.restore();
-                    }
-                }
-                Connections { target: segment
-                    function onAccentChanged() { curve.requestPaint() }
-                    function onModelDataChanged() { curve.requestPaint() }
-                    function onLaneChanged() { curve.requestPaint() }
-                    function onBadgeOffsetChanged() { curve.requestPaint() }
-                }
-            }
+            property point start: root.center(modelData.members[0])
+            property point end: root.center(modelData.members[modelData.members.length-1])
+            x: 0; y: start.y; width: root.gutterBleed+11; height: Math.max(0,end.y-start.y)
             HoverHandler { id: hover }
             ToolTip.visible: hover.hovered
             ToolTip.text: modelData.description

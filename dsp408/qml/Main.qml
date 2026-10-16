@@ -169,14 +169,17 @@ ApplicationWindow {
     RowLayout {
         anchors.fill: parent; anchors.margins: 10; spacing: 10
         Card {
+            id: inputCard
+            LinkRail { objectName: 'input_link_overlay'; sourceView: inputScroll; strips: inputStrips; firstChannel: 0; channelCount: 4 }
             Layout.preferredWidth: 232; Layout.fillHeight: true
             AdaptiveScrollView {
+                id: inputScroll
                 objectName: 'input_scroll'
                 anchors.fill: parent; anchors.margins: 9; clip: true; contentWidth: availableWidth
                 Column {
                     width: parent.width; spacing: 6
                     Item { width: 212; height: 19; Label { text: 'INPUTS (4)'; font.bold: true } }
-                    Repeater { model: 4; ChannelStrip { required property int index; channelIndex: index; width: 212 } }
+                    Repeater { id: inputStrips; model: 4; ChannelStrip { required property int index; channelIndex: index; width: 212 } }
                     Label { text: 'MATRIX / ROUTING'; font.bold: true; height: 20; verticalAlignment: Text.AlignVCenter }
                     GridLayout {
                         columns: 9; columnSpacing: 2; rowSpacing: 2
@@ -286,14 +289,17 @@ ApplicationWindow {
             }
         }
         Card {
+            id: outputCard
+            LinkRail { objectName: 'output_link_overlay'; sourceView: outputScroll; strips: outputStrips; firstChannel: 4; channelCount: 8 }
             Layout.preferredWidth: 246; Layout.fillHeight: true
             ColumnLayout {
                 anchors.fill: parent; anchors.margins: 8; spacing: 6
                 Label { text: 'OUTPUTS (8)'; font.bold: true; Layout.preferredHeight: 24 }
                 AdaptiveScrollView {
+                    id: outputScroll
                     objectName: 'output_scroll'
                     Layout.fillWidth: true; Layout.fillHeight: true; clip: true; contentWidth: availableWidth
-                    Column { width: parent.width; spacing: 5; Repeater { model: 8; ChannelStrip { required property int index; channelIndex: index+4; compact: true; width: 226 } } }
+                    Column { width: parent.width; spacing: 5; Repeater { id: outputStrips; model: 8; ChannelStrip { required property int index; channelIndex: index+4; compact: true; width: 226 } } }
                 }
                 ConsoleButton {
                     objectName: 'outputs_mute_all'; Layout.fillWidth: true

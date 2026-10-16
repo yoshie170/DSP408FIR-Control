@@ -8,17 +8,41 @@ Rectangle {
     property bool compact: false
     property var channelData: { backend.revision; return backend.channel(channelIndex) }
     property var linkData: backend.channelLinks[channelIndex]
+    property color linkAccent: Theme.color(root.linkData.color || '#40d9c4',backend.lightTheme)
     property bool selected: backend.selected===channelIndex
     property var dynamicsStatus: backend.reductionState[channelIndex]
     property bool gainAllowed: { backend.revision; backend.usbGainReady; return backend.gainEditingAllowed(channelIndex) }
     property bool limitedGain: backend.usbGainMode && channelIndex===0
     height: compact ? 66 : 68
     color: 'transparent'
-    Rectangle { x: 12; width: parent.width-12; height: parent.height; radius: 6
-        color: root.selected ? Theme.color('#143649', backend.lightTheme) : Theme.color('#101e28', backend.lightTheme)
-        border.color: root.selected ? Theme.color('#079acb', backend.lightTheme) : root.linkData.linked ? (backend.lightTheme?'#91bdb9':'#355b62') : Theme.color('#2c414e', backend.lightTheme)
+    Canvas {
+        id: linkGlow
+        visible: root.linkData.linked
+        x: 8; y: -4; width: parent.width-4; height: parent.height+8
+        onWidthChanged: requestPaint()
+        onHeightChanged: requestPaint()
+        onVisibleChanged: requestPaint()
+        onPaint: {
+            var ctx=getContext('2d');ctx.reset();
+            if(!visible)return;
+            var x=4.5;var y=4.5;var w=width-9;var h=height-9;var r=5.5;
+            ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+            ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);
+            ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+            ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);
+            ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+            ctx.strokeStyle=root.linkAccent;
+            ctx.globalAlpha=backend.lightTheme?0.025:0.045;ctx.lineWidth=7;ctx.stroke();
+            ctx.globalAlpha=backend.lightTheme?0.06:0.09;ctx.lineWidth=4;ctx.stroke();
+            ctx.globalAlpha=backend.lightTheme?0.1:0.16;ctx.lineWidth=2.5;ctx.stroke();
+        }
+        Connections { target: root; function onLinkAccentChanged() { linkGlow.requestPaint() } }
+        Connections { target: backend; function onThemeChanged() { linkGlow.requestPaint() } }
     }
-    LinkRail { objectName: 'link_rail_'+root.channelIndex; channelIndex: root.channelIndex; rowGap: root.compact?5:6; width: 10; height: parent.height }
+    Rectangle { objectName: 'channel_card_'+root.channelIndex; x: 12; width: parent.width-12; height: parent.height; radius: 6
+        color: root.selected ? Theme.color('#143649', backend.lightTheme) : Theme.color('#101e28', backend.lightTheme)
+        border.color: root.linkData.linked ? Qt.rgba(root.linkAccent.r,root.linkAccent.g,root.linkAccent.b,root.selected?0.95:0.72) : root.selected ? Theme.color('#079acb', backend.lightTheme) : Theme.color('#2c414e', backend.lightTheme)
+    }
     RowLayout {
         anchors.fill: parent; anchors.margins: 4; spacing: 5
         anchors.leftMargin: 17
