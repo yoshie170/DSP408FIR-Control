@@ -60,7 +60,12 @@ ColumnLayout {
             }
         }
     }
-    Label { text: 'Enabled paths are mixed into the selected output · all edits are local'; color: Theme.color('#708e9f', backend.lightTheme); font.pixelSize: 10 }
+    Label {
+        objectName: 'routing_edit_scope'
+        text: 'Enabled paths are mixed into the selected output · '+(!backend.usbReadActive?'offline configuration':backend.usbControlMode?(backend.usbControlReady?'changes are sent to DSP':'DSP editing currently unavailable'):'read only')
+        Layout.fillWidth: true; wrapMode: Text.WordWrap
+        color: Theme.color('#708e9f', backend.lightTheme); font.pixelSize: 10
+    }
     Item { Layout.fillHeight: true }
 }
 
