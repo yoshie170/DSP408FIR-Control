@@ -5,7 +5,6 @@ MCU1.15 B00E/B036 and B036+28: flash address selector<<16 +52*block;
 1261 blocks cover exactly65536 bytes. No sentinel skip or synthesized words.
 """
 import hashlib,time
-from pathlib import Path
 from threading import Event
 from uuid import uuid4
 from PySide6.QtCore import QThread,Signal

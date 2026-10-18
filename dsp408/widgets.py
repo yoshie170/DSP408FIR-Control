@@ -1,9 +1,8 @@
 import sys
 from pathlib import Path
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
     QLabel, QPushButton, QListWidget, QTabWidget, QFormLayout, QDoubleSpinBox,
-    QCheckBox, QComboBox, QGridLayout, QFileDialog, QMessageBox, QGroupBox, QScrollArea)
+    QCheckBox, QComboBox, QGridLayout, QFileDialog, QMessageBox, QGroupBox)
 from dsp408.model import DeviceModel
 
 STYLE = '''

@@ -1,6 +1,5 @@
 """Manual P02 EEPROM read; no staging or parameter setters."""
 import time
-from pathlib import Path
 from threading import Event
 from uuid import uuid4
 from PySide6.QtCore import QThread, Signal

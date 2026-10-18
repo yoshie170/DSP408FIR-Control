@@ -15,7 +15,7 @@ ColumnLayout {
     property string observedInput: backend.inputSelectionState.source || ''
     onObservedInputChanged: chosenInput=observedInput || 'ANALOG'
     Component.onCompleted: chosenInput=observedInput || 'ANALOG'
-    Label { objectName: 'setup_read_status'; visible: backend.editingLocked; text: 'Processor locked'; color: Theme.color('#93b7c9', backend.lightTheme); Layout.fillWidth: true }
+    Label { objectName: 'setup_read_status'; visible: backend.editingLocked; text: backend.usbReadActive?'Processor locked':'Editing locked'; color: Theme.color('#93b7c9', backend.lightTheme); Layout.fillWidth: true }
 
     Rectangle {
         Layout.fillWidth: true; implicitHeight: bankLayout.implicitHeight+20
@@ -148,11 +148,11 @@ ColumnLayout {
                 Label { text: backend.editingLocked?'LOCKED':'UNLOCKED'; color: backend.editingLocked?Theme.color('#e8b961', backend.lightTheme):Theme.color('#43d782', backend.lightTheme); font.bold: true; Layout.fillWidth: true }
                 ConsoleButton {
                     objectName: 'device_lock_button'; text: backend.editingLocked?'Unlock…':backend.usbReadActive?'Lock processor…':'Lock editing…'
-                    enabled: !backend.utilityBusy && (!backend.usbReadActive ? !backend.processorLocked : backend.utilitiesAvailable)
+                    enabled: !backend.utilityBusy && (!backend.usbReadActive || backend.utilitiesAvailable)
                     onClicked: securityDialog.open()
                 }
             }
-            Label { text: backend.processorLocked && !backend.usbReadActive?'Processor locked. Connect USB to unlock.':backend.usbReadActive?(backend.processorPasswordProtected?'Password protection enabled · '+(backend.processorLocked?'access locked':'access unlocked'):'Password protection disabled'):'DEMO lock protects editing in this session.'; color: Theme.color('#95b3c4', backend.lightTheme); wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Label { text: backend.usbReadActive?(backend.processorPasswordProtected?'Password protection enabled · '+(backend.processorLocked?'access locked':'access unlocked'):'Password protection disabled'):'DEMO lock protects editing in this session.'+(backend.processorLocked?' Last observed DSP access was locked; reconnect to unlock the processor.':''); color: Theme.color('#95b3c4', backend.lightTheme); wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
     }
     RowLayout {

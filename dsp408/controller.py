@@ -5,7 +5,7 @@ import time
 import json
 from PySide6.QtCore import QObject,Signal,Slot,Property,QTimer
 from PySide6.QtWidgets import QFileDialog
-from dsp408.model import DeviceModel,FILTER_TYPES,CROSS_TYPES,FIR_WINDOWS,FIR_TYPES,LIMITS,DEQ_TYPES,DEQ_MODES,state_snapshot
+from dsp408.model import DeviceModel,FILTER_TYPES,CROSS_TYPES,FIR_WINDOWS,FIR_TYPES,DEQ_TYPES,DEQ_MODES,state_snapshot
 from dsp408.editor_profile import FREQUENCY_MIN,FREQUENCY_MAX,DETECTOR_TYPES,RATIO_VALUES,Q_VALUES,DEQ_LIMITS,SINE_FREQUENCIES
 from dsp408.editor_profile import FIR_HP_MIN,FIR_HP_MAX,FIR_LP_MIN,FIR_LP_MAX
 from dsp408.fir import parse_coefficients
@@ -318,7 +318,7 @@ class Controller(QObject):
         self._theme=value;self.themeChanged.emit();return True
 
     @Property(bool,notify=changed)
-    def editingLocked(self):return self._editing_lock.locked or bool(self._utility_state.get('locked'))
+    def editingLocked(self):return self._editing_lock.locked or self.usbReadActive and bool(self._utility_state.get('locked'))
 
     @Property(bool,notify=changed)
     def processorLocked(self):return bool(self._utility_state.get('locked'))
@@ -444,8 +444,6 @@ class Controller(QObject):
         try:
             request=unlock_request(password)
             if self.usbReadActive:return self._request_utility(request)
-            if self._utility_state.get('locked'):
-                self.notify('Connect USB to unlock the processor.');return False
             if not self._editing_lock.unlock(password):self.notify('Incorrect password.');return False
             self.notify('Editing unlocked · DEMO');return True
         except ValueError as error:self.notify(str(error));return False

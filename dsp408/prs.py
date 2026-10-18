@@ -170,11 +170,9 @@ def to_bytes(model):
 
 def save(model,path):
     raw=to_bytes(model)  # Validate all changes before touching the destination.
-    target=Path(path);temp=target.with_name(target.name+'.tmp')
-    try:
-        temp.write_bytes(raw);temp.replace(target)
-        # Commit the exact serialized template only after the atomic write.
-        # Subsequent Clear retains the last saved count/co-fields, not an older
-        # template's count from before the user's coefficient import.
-        model.vendor_prs_hex=raw.hex()
-    finally:temp.unlink(missing_ok=True)
+    from dsp408.atomic_file import write_bytes
+    write_bytes(path,raw)
+    # Commit the exact serialized template only after the atomic write.
+    # Subsequent Clear retains the last saved count/co-fields, not an older
+    # template's count from before the user's coefficient import.
+    model.vendor_prs_hex=raw.hex()

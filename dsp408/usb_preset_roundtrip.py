@@ -1,6 +1,5 @@
 """Manual P19 trial worker, explicitly approved by the user on 2026-10-12."""
 import time
-from pathlib import Path
 from threading import Event
 from uuid import uuid4
 from PySide6.QtCore import QThread,Signal

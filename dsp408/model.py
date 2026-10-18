@@ -219,12 +219,8 @@ class DeviceModel:
             from dsp408.prs import save
             return save(self,path)
         self.validate()
-        target=Path(path); temp=target.with_name(target.name+'.tmp')
-        try:
-            temp.write_text(json.dumps(self.to_dict(),indent=2,ensure_ascii=False,allow_nan=False),encoding='utf-8')
-            temp.replace(target)
-        finally:
-            temp.unlink(missing_ok=True)
+        from dsp408.atomic_file import write_bytes
+        write_bytes(path,json.dumps(self.to_dict(),indent=2,ensure_ascii=False,allow_nan=False).encode('utf-8'))
 
     @classmethod
     def load(cls,path):

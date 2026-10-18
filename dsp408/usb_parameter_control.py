@@ -16,7 +16,7 @@ from dsp408.model import DeviceModel
 from dsp408.source_session import SourceDocument, project_state
 from dsp408.source_bindings import _plan_validated_changes
 from dsp408.source_codec import frame
-from dsp408.usb_read import HidReadPort, validate_read_request, read_bus_frame, run_read_session
+from dsp408.usb_read import HidReadPort, validate_read_request, read_bus_frame
 from dsp408.usb_journal import DurableJournal
 from dsp408.control_fir_refresh import FirRefreshMixin
 

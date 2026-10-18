@@ -17,7 +17,8 @@ class DurableJournal:
 
     def record(self, event):
         line = json.dumps({'index': self.count, 'time_ns': time.time_ns(), **event}, ensure_ascii=False) + '\n'
-        if self.size + len(line.encode('utf-8')) > self.max_bytes:
+        line_bytes=len(line.encode('utf-8'))
+        if self.size + line_bytes > self.max_bytes:
             raise OSError(f'USB journal limit reached ({self.max_bytes//(1024*1024)} MiB); reconnect only after reviewing the log')
         self.stream.write(line)
         self.stream.flush()
@@ -38,7 +39,7 @@ class DurableJournal:
         if self.sync_each or critical or time.monotonic()-self.last_sync >= 1.:
             os.fsync(self.stream.fileno())
             self.last_sync = time.monotonic()
-        self.size += len(line.encode('utf-8'))
+        self.size += line_bytes
         self.count += 1
 
     def close(self):

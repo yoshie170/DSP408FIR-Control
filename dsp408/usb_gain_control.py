@@ -4,7 +4,6 @@ No generic dispatcher, queue of arbitrary frames, gain range extension, linked
 channels or optimistic model changes. Normal read adapter stays read-only.
 """
 import math
-from pathlib import Path
 from queue import Queue, Empty
 from threading import Event, Lock
 import time
