@@ -47,6 +47,7 @@ begin
   if not WizardForm.LicenseAcceptedRadio.Checked then RaiseException('Cannot accept license');
   if Pos('Author: Łukasz Białas', WizardForm.InfoBeforeMemo.Text) = 0 then RaiseException('Missing author information');
   if Pos('Independent software', WizardForm.InfoBeforeMemo.Text) = 0 then RaiseException('Missing independence notice');
+  if Pos('https://github.com/yoshie170/DSP408FIR-Control', WizardForm.InfoBeforeMemo.Text) = 0 then RaiseException('Missing project URL');
   SaveStringToFile(ExpandConstant('{param:result}'), 'MIT/full-text/Unicode/acceptance/author/independence PASS', False);
   Abort;
 end;
@@ -61,7 +62,7 @@ end;
         assert executed.returncode==1,(executed.returncode,executed.stderr)
         assert result.read_text()=='MIT/full-text/Unicode/acceptance/author/independence PASS'
     data={'passed':True,'languages':['polish','english'],'normal_license_default_unaccepted':True,
-          'full_mit_text':True,'unicode_author':True,'author_and_independence':True,
+          'full_mit_text':True,'unicode_author':True,'author_and_independence':True,'project_url':True,
           'installation_performed':False,'registry_writes':False,'device_io':False}
     (output/'validation.json').write_text(json.dumps(data,indent=2),encoding='utf-8')
     return data

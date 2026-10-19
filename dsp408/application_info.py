@@ -10,7 +10,7 @@ from dsp408.version import VERSION, BUILD
 NAME = 'DSP408FIR Control'
 AUTHOR = 'Łukasz Białas'
 COPYRIGHT = 'Copyright © 2026 '+AUTHOR
-GITHUB = 'https://github.com/yoshie170/DSP408-Control'
+GITHUB = 'https://github.com/yoshie170/DSP408FIR-Control'
 WEBSITE = 'https://gremium.tech'
 INDEPENDENCE = ('Independent software for the t.racks FIR DSP 408. '
                 'Not officially affiliated with, endorsed by or supported by the device manufacturer.')

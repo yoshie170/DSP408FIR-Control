@@ -1,5 +1,7 @@
 # Windows installer
 
+Project: https://github.com/yoshie170/DSP408FIR-Control
+
 The package is `dist/installer/DSP408FIR-Control-0.9.1-Setup.exe` for
 Windows10 build19041 or later / Windows11, x64-compatible. Python and Qt are
 included. Default installation: `C:\Program Files\DSP408FIR Control`.

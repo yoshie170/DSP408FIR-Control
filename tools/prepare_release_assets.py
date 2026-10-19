@@ -16,7 +16,7 @@ def prepare(root):
         'Copyright © 2026 Łukasz Białas\n'
         'Application license: MIT\n'
         'Technologies: Python, PySide6, Qt 6 / QML\n'
-        'Project: https://github.com/yoshie170/DSP408-Control\n\n'
+        'Project: https://github.com/yoshie170/DSP408FIR-Control\n\n'
         'Independent software for the t.racks FIR DSP 408. Not officially affiliated with, '
         'endorsed by or supported by the device manufacturer.\n\n'
         'Third-party libraries retain their original licenses, including LGPLv3 for '
@@ -26,6 +26,7 @@ def prepare(root):
     target.mkdir(parents=True,exist_ok=True)
     lines=['DSP408FIR Control - third-party components',
            'Copyright © 2026 Łukasz Białas · https://gremium.tech',
+           'Project: https://github.com/yoshie170/DSP408FIR-Control',
            '', 'Components retain their original copyrights and licenses.',
            'MIT applies to the application code, not to third-party components.',
            'Qt / Qt for Python: © The Qt Company Ltd. and other contributors.',

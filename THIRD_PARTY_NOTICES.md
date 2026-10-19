@@ -2,6 +2,7 @@
 
 DSP408FIR Control application code is licensed under the [MIT License](LICENSE).
 Copyright © 2026 Łukasz Białas · [gremium.tech](https://gremium.tech).
+Project: [DSP408FIR-Control](https://github.com/yoshie170/DSP408FIR-Control).
 Third-party components retain their own copyrights and licenses; MIT does not
 replace their license terms.
 

@@ -1,5 +1,6 @@
 DSP408FIR Control - third-party components
 Copyright © 2026 Łukasz Białas · https://gremium.tech
+Project: https://github.com/yoshie170/DSP408FIR-Control
 
 Components retain their original copyrights and licenses.
 MIT applies to the application code, not to third-party components.
