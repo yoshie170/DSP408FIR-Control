@@ -209,8 +209,8 @@ including PySide6/Qt, retain their own terms; see
 **Copy Diagnostics** copies only curated version, OS and connection-state
 information to the clipboard. It excludes IP/MAC addresses, passwords, serial
 numbers, configuration names and paths, and sends nothing automatically.
-Issue reporting opens the GitHub page; access to this private repository is
-required. The English startup warning has a local **Don't show again** option,
+Issue reporting opens the project GitHub page; submitting an issue requires a
+GitHub account. The English startup warning has a local **Don't show again** option,
 which can be changed through **About → Safety notice**.
 
 ## Troubleshooting

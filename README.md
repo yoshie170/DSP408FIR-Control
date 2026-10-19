@@ -222,8 +222,8 @@ operacyjny oraz podstawowy stan połączenia: USB/Ethernet, Control/Read only,
 blokadę i okres odpytywania VU. Nie kopiuje IP, MAC, numerów seryjnych, haseł,
 nazw konfiguracji/kanałów, plików ani ścieżek. Niczego automatycznie nie wysyła.
 **Report an Issue** otwiera formularz GitHuba; użytkownik sam opisuje problem
-i decyduje, czy wkleić diagnostykę. Repozytorium pozostaje prywatne, więc wymaga
-dostępu do projektu na GitHubie.
+i decyduje, czy wkleić diagnostykę. Do wysłania zgłoszenia potrzebne jest konto
+na GitHubie.
 
 Przy normalnym uruchomieniu pojawia się krótkie angielskie ostrzeżenie o ryzyku
 uszkodzenia sprzętu przez nieprawidłowe ustawienia DSP. **Don't show again**
