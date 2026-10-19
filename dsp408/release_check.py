@@ -19,14 +19,29 @@ def verify(controller,window,path):
     assert not icon.isNull() and window.width()>0 and window.height()>0
     DATA_DIRECTORY.mkdir(parents=True,exist_ok=True)
     temporary=DATA_DIRECTORY/f'preferences-probe-{uuid4().hex}.json'
+    air_probe={}
     try:
         preferences=Preferences(temporary)
         preferences.save_theme('light')
         assert preferences.theme()=='light'
+        preferences.save_delay_air_conditions({'enabled':True,'humidity':60,'pressure_hpa':1000})
+        from dsp408.controller import Controller
+        from dsp408.delay import cramer_speed,sound_speed
+        probe=Controller(preferences_path=temporary);probe.timer.stop()
+        try:
+            before=probe.model.to_dict()
+            assert probe.delayAirCorrectionActive and probe.soundSpeed==cramer_speed(20,60,1000)
+            air_probe={'humidity':probe.delayHumidity,'pressure_hpa':probe.delayPressureHpa,
+                       'speed_20c':probe.soundSpeed}
+            assert probe.setAmbientTemperature(40) and not probe.delayAirCorrectionActive
+            assert probe.soundSpeed==sound_speed(40) and probe.model.to_dict()==before
+            air_probe['fallback_40c']=probe.soundSpeed
+        finally:probe.shutdown()
     finally:temporary.unlink(missing_ok=True)
     result={'frozen':bool(getattr(sys,'frozen',False)), 'python':sys.version.split()[0],
             'application_name':controller.applicationName,'application_version':controller.applicationVersion,
             'window_title':window.title(),'ambient_temperature':controller.ambientTemperature,
+            'optional_air_conversion':air_probe,
             'modules':list(modules),'icon_sizes':[(s.width(),s.height()) for s in icon.availableSizes()],
             'data_directory':str(DATA_DIRECTORY),'preferences_path':str(PREFERENCES_PATH),
             'journal_directory':str(JOURNAL_DIRECTORY), 'preferences_write_read':True,

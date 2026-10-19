@@ -12,7 +12,7 @@ from dsp408.fir import parse_coefficients
 from dsp408.response import response,fir_response
 from dsp408.dynamics import transfer_db,meter_position,METER_BREAKPOINTS
 from dsp408.crossover import plot_data,intersections
-from dsp408.delay import FACTORS, display_delay, delay_milliseconds,conversion_factors,sound_speed,checked_temperature
+from dsp408.delay import FACTORS, display_delay, delay_milliseconds,conversion_factors,sound_speed,checked_temperature,checked_air_conditions
 from dsp408.wire_research import inspect_wire_file
 from dsp408.overview import channel_summary
 from dsp408.software_bypass import SoftwareBypass,SPECS
@@ -65,6 +65,7 @@ class Controller(QObject):
         self._meter_poll_ms=self._preferences.meter_poll_ms()
         self._dynamics_display=self._preferences.dynamics_display()
         self._ambient_temperature=self._preferences.ambient_temperature()
+        self._delay_air=self._preferences.delay_air_conditions()
         self._output_db=[-100.0]*12;self._peaks=[-100.0]*12;self._peak_hold=[0]*12
         self._peq_cache=(None,[],[])
         self._peq_compared=[];self._comparison_cache={};self._xover_compared=[];self._xover_curve_cache={}
@@ -1265,13 +1266,37 @@ class Controller(QObject):
         path,_=QFileDialog.getOpenFileName(None,'Inspect offline wire log','','Raw / hex stream (*.bin *.hex *.txt)')
         if path:self.inspectWirePath(path)
     @Slot(str,result=float)
-    def delayFactor(self,unit):return conversion_factors(self._ambient_temperature)[unit]
+    def delayFactor(self,unit):return self.delayFactors[unit]
     @Property(float,notify=delayTemperatureChanged)
     def ambientTemperature(self):return self._ambient_temperature
     @Property(float,notify=delayTemperatureChanged)
-    def soundSpeed(self):return sound_speed(self._ambient_temperature)
+    def soundSpeed(self):return sound_speed(self._ambient_temperature,**self._delay_air_options())
     @Property('QVariantMap',notify=delayTemperatureChanged)
-    def delayFactors(self):return conversion_factors(self._ambient_temperature)
+    def delayFactors(self):return conversion_factors(self._ambient_temperature,**self._delay_air_options())
+    @Property(bool,notify=delayTemperatureChanged)
+    def delayAirCorrection(self):return self._delay_air['enabled']
+    @Property(bool,notify=delayTemperatureChanged)
+    def delayAirCorrectionActive(self):return self.delayAirCorrection and 0<=self._ambient_temperature<=30
+    @Property(float,notify=delayTemperatureChanged)
+    def delayHumidity(self):return self._delay_air['humidity']
+    @Property(float,notify=delayTemperatureChanged)
+    def delayPressureHpa(self):return self._delay_air['pressure_hpa']
+    def _delay_air_options(self):
+        return {'humidity':self.delayHumidity if self.delayAirCorrection else None,'pressure_hpa':self.delayPressureHpa}
+    def _set_delay_air(self,**changes):
+        try:
+            value=checked_air_conditions(self._delay_air|changes)
+            if value==self._delay_air:return True
+            self._preferences.save_delay_air_conditions(value)
+        except (ValueError,TypeError,KeyError,OSError) as error:
+            self._message='Cannot save air conditions: '+str(error);self.statusChanged.emit();return False
+        self._delay_air=value;self.delayTemperatureChanged.emit();return True
+    @Slot(bool,result=bool)
+    def setDelayAirCorrection(self,value):return self._set_delay_air(enabled=value)
+    @Slot(float,result=bool)
+    def setDelayHumidity(self,value):return self._set_delay_air(humidity=value)
+    @Slot(float,result=bool)
+    def setDelayPressureHpa(self,value):return self._set_delay_air(pressure_hpa=value)
     @Slot(float,result=bool)
     def setAmbientTemperature(self,value):
         try:
@@ -1282,11 +1307,11 @@ class Controller(QObject):
             self._message='Cannot save temperature: '+str(error);self.statusChanged.emit();return False
         self._ambient_temperature=value;self.delayTemperatureChanged.emit();return True
     @Slot(float,str,result=float)
-    def delayDisplay(self,milliseconds,unit):return display_delay(milliseconds,unit,self._ambient_temperature)
+    def delayDisplay(self,milliseconds,unit):return display_delay(milliseconds,unit,self._ambient_temperature,**self._delay_air_options())
     @Slot(int,float,str)
     def editDelay(self,index,value,unit):
         if self.editingLocked:return
-        try:self.edit(index,'delay_ms',delay_milliseconds(value,unit,self._ambient_temperature))
+        try:self.edit(index,'delay_ms',delay_milliseconds(value,unit,self._ambient_temperature,**self._delay_air_options()))
         except (KeyError,ValueError,TypeError) as e:self.notify(str(e))
     @Slot(float,result=float)
     def meterPosition(self,db):return meter_position(db)

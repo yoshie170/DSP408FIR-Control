@@ -5,8 +5,10 @@ import QtQuick.Layouts
 import QtQuick.Window
 ColumnLayout {
     id: root
+    property bool showAdvanced: false
     property real factor: backend.delayFactors[backend.settings.delay_unit]
     readonly property bool compact: Window.window && Window.window.height<768
+    Layout.minimumHeight: implicitHeight
     spacing: compact?2:4
     RowLayout {
         Layout.fillWidth: true
@@ -19,8 +21,34 @@ ColumnLayout {
         NumberField { controlId: 'delay_temperature'; Layout.preferredWidth: 68; fieldHeight: root.compact?24:27; number: backend.ambientTemperature; minimum: -40; maximum: 60; step: 1; decimals: 1; onCommitted: value => backend.setAmbientTemperature(value) }
         Label { text: '°C'; color: Theme.color('#9ab5c6', backend.lightTheme) }
         ConsoleButton { objectName: 'delay_temperature_reset'; text: '20 °C'; implicitHeight: root.compact?24:27; onClicked: backend.setAmbientTemperature(20) }
+        ConsoleButton { objectName: 'delay_advanced'; text: root.showAdvanced?'Advanced ▴':'Advanced ▾'; implicitHeight: root.compact?24:27; checked: root.showAdvanced; onClicked: root.showAdvanced=!root.showAdvanced }
         Item { Layout.fillWidth: true }
-        Label { objectName: 'delay_sound_speed'; text: backend.soundSpeed.toFixed(1)+' m/s'; color: Theme.color('#9ab5c6', backend.lightTheme); font.pixelSize: 11 }
+        Label { objectName: 'delay_sound_speed'; text: backend.soundSpeed.toFixed(1)+' m/s'+(backend.delayAirCorrection && !backend.delayAirCorrectionActive?' · estimate':''); color: Theme.color('#9ab5c6', backend.lightTheme); font.pixelSize: 11 }
+    }
+    Rectangle {
+        visible: root.showAdvanced
+        Layout.fillWidth: true; implicitHeight: airOptions.implicitHeight+12
+        radius: 5; color: Theme.color('#0e1b24', backend.lightTheme); border.color: Theme.color('#304452', backend.lightTheme)
+        ColumnLayout {
+            id: airOptions
+            anchors.fill: parent; anchors.margins: 6; spacing: 4
+            ConsoleCheck { objectName: 'delay_air_correction'; text: 'Include humidity and pressure'; checked: backend.delayAirCorrection; onClicked: backend.setDelayAirCorrection(checked) }
+            RowLayout {
+                enabled: backend.delayAirCorrection; opacity: enabled?1:.45; spacing: 6
+                Label { text: 'Humidity'; color: Theme.color('#9ab5c6', backend.lightTheme); font.pixelSize: 11 }
+                NumberField { controlId: 'delay_humidity'; Layout.preferredWidth: 64; fieldHeight: 25; number: backend.delayHumidity; minimum: 0; maximum: 100; step: 1; decimals: 1; onCommitted: value => backend.setDelayHumidity(value) }
+                Label { text: '% RH'; color: Theme.color('#9ab5c6', backend.lightTheme); font.pixelSize: 11 }
+                Item { Layout.preferredWidth: 8 }
+                Label { text: 'Air pressure'; color: Theme.color('#9ab5c6', backend.lightTheme); font.pixelSize: 11 }
+                NumberField { controlId: 'delay_pressure'; Layout.preferredWidth: 84; fieldHeight: 25; number: backend.delayPressureHpa; minimum: 760; maximum: 1020; step: 1; decimals: 2; onCommitted: value => backend.setDelayPressureHpa(value) }
+                Label { text: 'hPa'; color: Theme.color('#9ab5c6', backend.lightTheme); font.pixelSize: 11 }
+            }
+            Label {
+                objectName: 'delay_air_status'; Layout.fillWidth: true; wrapMode: Text.WordWrap; font.pixelSize: 10
+                text: !backend.delayAirCorrection?'Optional · model range 0–30 °C / 760–1020 hPa. Use local absolute pressure.':backend.delayAirCorrectionActive?'Correction active · use local absolute pressure (760–1020 hPa).':'Temperature-only estimate · humidity correction is available from 0 to 30 °C.'
+                color: Theme.color(backend.delayAirCorrection && !backend.delayAirCorrectionActive?'#e8b961':'#7290a2', backend.lightTheme)
+            }
+        }
     }
     Repeater {
         model: 12
@@ -52,6 +80,6 @@ ColumnLayout {
             }
         }
     }
-    Label { text: 'Temperature changes the distance display. Delay stays in milliseconds.'; font.pixelSize: 10; color: Theme.color('#7290a2', backend.lightTheme); Layout.fillWidth: true; wrapMode: Text.WordWrap }
+    Label { text: 'Air conditions change the distance display. Delay stays in milliseconds.'; font.pixelSize: 10; color: Theme.color('#7290a2', backend.lightTheme); Layout.fillWidth: true; wrapMode: Text.WordWrap }
     Item { Layout.fillHeight: true }
 }

@@ -37,5 +37,5 @@ ColumnLayout {
         Item { Layout.fillWidth: true }
         Label { objectName: root.controlId+'_equivalent'; text: root.channelData.delay_ms.toFixed(1)+' ms = '+(root.channelData.delay_ms*backend.delayFactors.m).toFixed(3)+' m'; color: Theme.color('#9ab5c6', backend.lightTheme) }
     }
-    Label { text: backend.ambientTemperature.toFixed(1)+' °C · '+backend.soundSpeed.toFixed(1)+' m/s · temperature in DELAY'; color: Theme.color('#7290a2', backend.lightTheme); font.pixelSize: 10 }
+    Label { text: backend.ambientTemperature.toFixed(1)+' °C · '+backend.soundSpeed.toFixed(1)+' m/s'+(backend.delayAirCorrection && !backend.delayAirCorrectionActive?' · estimate':'')+' · air conditions in DELAY'; color: Theme.color('#7290a2', backend.lightTheme); font.pixelSize: 10 }
 }

@@ -75,6 +75,16 @@ class Preferences:
         from dsp408.delay import checked_temperature
         self._save(self._updated(ambient_temperature=checked_temperature(value)))
 
+    def delay_air_conditions(self):
+        from dsp408.delay import checked_air_conditions,DEFAULT_HUMIDITY,DEFAULT_PRESSURE_HPA
+        default={'enabled':False,'humidity':DEFAULT_HUMIDITY,'pressure_hpa':DEFAULT_PRESSURE_HPA}
+        try:return checked_air_conditions(self._read().get('delay_air_conditions',default))
+        except (ValueError,TypeError,KeyError):return default
+
+    def save_delay_air_conditions(self,value):
+        from dsp408.delay import checked_air_conditions
+        self._save(self._updated(delay_air_conditions=checked_air_conditions(value)))
+
     def _updated(self,**changes):
         saved=self._read();data={'schema':1,'theme':self.theme()}
         # Preserve all known optional preferences across unrelated UI edits.
@@ -82,7 +92,8 @@ class Preferences:
         for key,reader in (('network_target',self.network_target),('meter_poll_ms',self.meter_poll_ms),
                            ('network_source_ip',self.network_source_ip),
                            ('dynamics_display',self.dynamics_display),
-                           ('ambient_temperature',self.ambient_temperature)):
+                           ('ambient_temperature',self.ambient_temperature),
+                           ('delay_air_conditions',self.delay_air_conditions)):
             if key in saved:data[key]=reader()
         data.update(changes)
         return data
