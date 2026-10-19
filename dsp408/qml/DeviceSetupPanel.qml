@@ -67,7 +67,7 @@ ColumnLayout {
             id: inputLayout; anchors.fill: parent; anchors.margins: 10; spacing: 6
             ColumnLayout {
                 spacing: 2
-                Label { text: 'INPUT SOURCE · A–D'; font.pixelSize: 15; font.bold: true; Layout.fillWidth: true }
+                Label { text: 'INPUT SOURCE · A–B'; font.pixelSize: 15; font.bold: true; Layout.fillWidth: true }
                 Label { objectName: 'input_source_readback'; text: backend.inputSelectionState.known?backend.inputSelectionState.source:'Not read'; color: Theme.color('#95b3c4', backend.lightTheme) }
             }
                 ComboBox { objectName: 'input_source_choice'; Layout.fillWidth: true; enabled: root.canApplyInput; model: ['Analog','AES / EBU']; currentIndex: root.chosenInput==='ANALOG'?0:1; onActivated: root.chosenInput=currentIndex===0?'ANALOG':'AES / EBU' }
@@ -165,7 +165,7 @@ ColumnLayout {
     ConsoleDialog {
         id: inputConfirm; objectName: 'input_source_confirmation'; parent: Overlay.overlay; anchors.centerIn: parent
         width: Math.min(480,parent.width-40); title: 'Switch input source?'; standardButtons: Dialog.Ok | Dialog.Cancel
-        contentItem: Label { text: 'Switch all four inputs to '+root.chosenInput+'? The processor saves this selection. The signal generator is a separate setting.'; wrapMode: Text.WordWrap; color: Theme.color('#c2d4df', backend.lightTheme) }
+        contentItem: Label { text: 'Switch inputs A–B to '+root.chosenInput+'? Inputs C–D remain analog. The processor saves this selection. The signal generator is a separate setting.'; wrapMode: Text.WordWrap; color: Theme.color('#c2d4df', backend.lightTheme) }
         onAccepted: backend.applyInputSelection(root.chosenInput)
     }
 
