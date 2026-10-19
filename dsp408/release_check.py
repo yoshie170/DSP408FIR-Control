@@ -25,6 +25,8 @@ def verify(controller,window,path):
         assert preferences.theme()=='light'
     finally:temporary.unlink(missing_ok=True)
     result={'frozen':bool(getattr(sys,'frozen',False)), 'python':sys.version.split()[0],
+            'application_name':controller.applicationName,'application_version':controller.applicationVersion,
+            'window_title':window.title(),'ambient_temperature':controller.ambientTemperature,
             'modules':list(modules),'icon_sizes':[(s.width(),s.height()) for s in icon.availableSizes()],
             'data_directory':str(DATA_DIRECTORY),'preferences_path':str(PREFERENCES_PATH),
             'journal_directory':str(JOURNAL_DIRECTORY), 'preferences_write_read':True,

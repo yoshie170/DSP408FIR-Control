@@ -66,13 +66,23 @@ class Preferences:
         if type(value) is not bool:raise ValueError('Choose enabled or disabled.')
         self._save(self._updated(dynamics_display=value))
 
+    def ambient_temperature(self):
+        from dsp408.delay import checked_temperature,DEFAULT_TEMPERATURE
+        try:return checked_temperature(self._read().get('ambient_temperature',DEFAULT_TEMPERATURE))
+        except (ValueError,TypeError):return DEFAULT_TEMPERATURE
+
+    def save_ambient_temperature(self,value):
+        from dsp408.delay import checked_temperature
+        self._save(self._updated(ambient_temperature=checked_temperature(value)))
+
     def _updated(self,**changes):
         saved=self._read();data={'schema':1,'theme':self.theme()}
         # Preserve all known optional preferences across unrelated UI edits.
         # Omitted fields keep their defaults without changing old file shapes.
         for key,reader in (('network_target',self.network_target),('meter_poll_ms',self.meter_poll_ms),
                            ('network_source_ip',self.network_source_ip),
-                           ('dynamics_display',self.dynamics_display)):
+                           ('dynamics_display',self.dynamics_display),
+                           ('ambient_temperature',self.ambient_temperature)):
             if key in saved:data[key]=reader()
         data.update(changes)
         return data

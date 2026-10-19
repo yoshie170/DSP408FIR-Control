@@ -5,13 +5,22 @@ import QtQuick.Layouts
 import QtQuick.Window
 ColumnLayout {
     id: root
-    property real factor: backend.delayFactor(backend.settings.delay_unit)
+    property real factor: backend.delayFactors[backend.settings.delay_unit]
     readonly property bool compact: Window.window && Window.window.height<768
     spacing: compact?2:4
     RowLayout {
         Layout.fillWidth: true
         Label { text: 'DELAY / ALL CHANNELS'; font.pixelSize: 17; font.bold: true; Layout.fillWidth: true }
         Repeater { model: ['ms','m','ft']; ConsoleButton { required property string modelData; objectName: 'delay_unit_'+modelData; text: modelData; checked: backend.settings.delay_unit===modelData; onClicked: backend.setting('delay_unit',modelData) } }
+    }
+    RowLayout {
+        Layout.fillWidth: true; spacing: 8
+        Label { text: 'Ambient temperature'; color: Theme.color('#9ab5c6', backend.lightTheme); font.pixelSize: 11 }
+        NumberField { controlId: 'delay_temperature'; Layout.preferredWidth: 68; fieldHeight: root.compact?24:27; number: backend.ambientTemperature; minimum: -40; maximum: 60; step: 1; decimals: 1; onCommitted: value => backend.setAmbientTemperature(value) }
+        Label { text: '°C'; color: Theme.color('#9ab5c6', backend.lightTheme) }
+        ConsoleButton { objectName: 'delay_temperature_reset'; text: '20 °C'; implicitHeight: root.compact?24:27; onClicked: backend.setAmbientTemperature(20) }
+        Item { Layout.fillWidth: true }
+        Label { objectName: 'delay_sound_speed'; text: backend.soundSpeed.toFixed(1)+' m/s'; color: Theme.color('#9ab5c6', backend.lightTheme); font.pixelSize: 11 }
     }
     Repeater {
         model: 12
@@ -37,12 +46,12 @@ ColumnLayout {
                     background: Rectangle { x: time.leftPadding; y: (time.height-height)/2; width: time.availableWidth; height: 5; radius: 2; color: Theme.color('#071117', backend.lightTheme); border.color: Theme.color('#345061', backend.lightTheme); Rectangle { width: parent.width*time.position; height: parent.height; color: Theme.color('#1380a4', backend.lightTheme); radius: 2 } }
                     handle: Rectangle { x: time.leftPadding+time.visualPosition*(time.availableWidth-width); y: (time.height-height)/2; width: 12; height: 19; radius: 3; color: Theme.color('#97b7c7', backend.lightTheme); border.color: Theme.color('#22bbe0', backend.lightTheme) }
                 }
-                NumberField { controlId: 'delay_exact_'+row.index; Layout.preferredWidth: 92; fieldHeight: 24; number: backend.delayDisplay(row.ch.delay_ms,backend.settings.delay_unit); minimum: 0; maximum: 680*root.factor; step: .1*root.factor; decimals: backend.settings.delay_unit==='ms'?1:3; onCommitted: value => backend.editDelay(row.index,value,backend.settings.delay_unit) }
+                NumberField { controlId: 'delay_exact_'+row.index; Layout.preferredWidth: 92; fieldHeight: 24; number: row.ch.delay_ms*root.factor; minimum: 0; maximum: 680*root.factor; step: .1*root.factor; decimals: backend.settings.delay_unit==='ms'?1:3; onCommitted: value => backend.editDelay(row.index,value,backend.settings.delay_unit) }
                 Label { text: backend.settings.delay_unit; Layout.preferredWidth: 18; color: Theme.color('#799caf', backend.lightTheme) }
-                Label { objectName: 'delay_equivalent_'+row.index; text: backend.settings.delay_unit==='ms'?backend.delayDisplay(row.ch.delay_ms,'m').toFixed(3)+' m':row.ch.delay_ms.toFixed(1)+' ms'; Layout.preferredWidth: 78; horizontalAlignment: Text.AlignRight; color: Theme.color('#a4bfce', backend.lightTheme); font.pixelSize: 11 }
+                Label { objectName: 'delay_equivalent_'+row.index; text: backend.settings.delay_unit==='ms'?(row.ch.delay_ms*backend.delayFactors.m).toFixed(3)+' m':row.ch.delay_ms.toFixed(1)+' ms'; Layout.preferredWidth: 78; horizontalAlignment: Text.AlignRight; color: Theme.color('#a4bfce', backend.lightTheme); font.pixelSize: 11 }
             }
         }
     }
-    Label { text: 'Editor conversion: 343.5 m/s · state is stored in milliseconds'; font.pixelSize: 10; color: Theme.color('#7290a2', backend.lightTheme) }
+    Label { text: 'Temperature changes the distance display. Delay stays in milliseconds.'; font.pixelSize: 10; color: Theme.color('#7290a2', backend.lightTheme); Layout.fillWidth: true; wrapMode: Text.WordWrap }
     Item { Layout.fillHeight: true }
 }

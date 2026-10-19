@@ -12,7 +12,7 @@ from dsp408.fir import parse_coefficients
 from dsp408.response import response,fir_response
 from dsp408.dynamics import transfer_db,meter_position,METER_BREAKPOINTS
 from dsp408.crossover import plot_data,intersections
-from dsp408.delay import FACTORS, display_delay, delay_milliseconds
+from dsp408.delay import FACTORS, display_delay, delay_milliseconds,conversion_factors,sound_speed,checked_temperature
 from dsp408.wire_research import inspect_wire_file
 from dsp408.overview import channel_summary
 from dsp408.software_bypass import SoftwareBypass,SPECS
@@ -21,6 +21,10 @@ from dsp408.readback_audit import audit_readback
 from dsp408.device_utilities import EditingLock, generator_request, lock_request, unlock_request,input_selection_request,input_selection_read_request
 
 class Controller(QObject):
+    @Property(str,constant=True)
+    def applicationName(self):
+        from dsp408.app_paths import application_name
+        return application_name()
     @Property(str,constant=True)
     def applicationVersion(self):
         from dsp408.version import VERSION
@@ -42,6 +46,7 @@ class Controller(QObject):
     networkTargetChanged=Signal()
     meterPollChanged=Signal()
     dynamicsDisplayChanged=Signal()
+    delayTemperatureChanged=Signal()
     def __init__(self,parent=None,*,preferences_path=None):
         super().__init__(parent);self.model=DeviceModel();self._selected=0;self._revision=0;self._message='DEMO / OFFLINE - no physical device communication';self._preset='Untitled';self._phase=False;self._meters=[0.0]*12;self.bank={};self._fir_cache=(None,[])
         self._pending_fir_action=None
@@ -59,6 +64,7 @@ class Controller(QObject):
         self._network_source_ip=self._preferences.network_source_ip();self._connection_transport='usb'
         self._meter_poll_ms=self._preferences.meter_poll_ms()
         self._dynamics_display=self._preferences.dynamics_display()
+        self._ambient_temperature=self._preferences.ambient_temperature()
         self._output_db=[-100.0]*12;self._peaks=[-100.0]*12;self._peak_hold=[0]*12
         self._peq_cache=(None,[],[])
         self._peq_compared=[];self._comparison_cache={};self._xover_compared=[];self._xover_curve_cache={}
@@ -1259,13 +1265,28 @@ class Controller(QObject):
         path,_=QFileDialog.getOpenFileName(None,'Inspect offline wire log','','Raw / hex stream (*.bin *.hex *.txt)')
         if path:self.inspectWirePath(path)
     @Slot(str,result=float)
-    def delayFactor(self,unit):return FACTORS[unit]
+    def delayFactor(self,unit):return conversion_factors(self._ambient_temperature)[unit]
+    @Property(float,notify=delayTemperatureChanged)
+    def ambientTemperature(self):return self._ambient_temperature
+    @Property(float,notify=delayTemperatureChanged)
+    def soundSpeed(self):return sound_speed(self._ambient_temperature)
+    @Property('QVariantMap',notify=delayTemperatureChanged)
+    def delayFactors(self):return conversion_factors(self._ambient_temperature)
+    @Slot(float,result=bool)
+    def setAmbientTemperature(self,value):
+        try:
+            value=checked_temperature(value)
+            if value==self._ambient_temperature:return True
+            self._preferences.save_ambient_temperature(value)
+        except (ValueError,TypeError,OSError) as error:
+            self._message='Cannot save temperature: '+str(error);self.statusChanged.emit();return False
+        self._ambient_temperature=value;self.delayTemperatureChanged.emit();return True
     @Slot(float,str,result=float)
-    def delayDisplay(self,milliseconds,unit):return display_delay(milliseconds,unit)
+    def delayDisplay(self,milliseconds,unit):return display_delay(milliseconds,unit,self._ambient_temperature)
     @Slot(int,float,str)
     def editDelay(self,index,value,unit):
         if self.editingLocked:return
-        try:self.edit(index,'delay_ms',delay_milliseconds(value,unit))
+        try:self.edit(index,'delay_ms',delay_milliseconds(value,unit,self._ambient_temperature))
         except (KeyError,ValueError,TypeError) as e:self.notify(str(e))
     @Slot(float,result=float)
     def meterPosition(self,db):return meter_position(db)

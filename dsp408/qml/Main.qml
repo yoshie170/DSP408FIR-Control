@@ -6,7 +6,7 @@ ApplicationWindow {
     id: win
     property var currentData: backend.current
     visible: true; width: 1366; height: 768; minimumWidth: 1180; minimumHeight: 700
-    title: 'DSP408FIR Control - '+backend.connectionLabel
+    title: backend.applicationName+' - '+backend.connectionLabel
     color: Theme.color('#0b1319', backend.lightTheme)
     palette.window: Theme.color('#0b141c', backend.lightTheme); palette.windowText: Theme.color('#e3eef6', backend.lightTheme); palette.base: Theme.color('#13232f', backend.lightTheme); palette.text: Theme.color('#e3eef6', backend.lightTheme); palette.button: Theme.color('#213441', backend.lightTheme); palette.buttonText: Theme.color('#e3eef6', backend.lightTheme); palette.highlight: Theme.color('#087dab', backend.lightTheme); palette.highlightedText: '#ffffff'
     font.family: 'Segoe UI'; font.pixelSize: 12
@@ -138,7 +138,7 @@ ApplicationWindow {
                         objectName: 'input_source_dot'; width: 8; height: 8; radius: 4; anchors.verticalCenter: parent.verticalCenter
                         color: !backend.inputSelectionState.known?Theme.color('#718b9b',backend.lightTheme):backend.inputSelectionState.source==='ANALOG'?Theme.color('#45dc80',backend.lightTheme):Theme.color('#39c9e4',backend.lightTheme)
                     }
-                    Label { objectName: 'input_source_header'; text: 'INPUT A–B · '+(backend.inputSelectionState.known?backend.inputSelectionState.source:'—'); color: Theme.color('#dceaf3',backend.lightTheme); font.pixelSize: 15; font.bold: true }
+                    Label { objectName: 'input_source_header'; text: 'INPUT · '+(backend.inputSelectionState.known?backend.inputSelectionState.source:'—'); color: Theme.color('#dceaf3',backend.lightTheme); font.pixelSize: 15; font.bold: true }
                 }
             }
             Item { Layout.fillWidth: true }
