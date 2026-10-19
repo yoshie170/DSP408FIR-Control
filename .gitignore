@@ -1,0 +1,55 @@
+# Shared source files and directories
+/*
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/README.en.md
+!/LICENSE
+!/CHANGELOG.md
+!/THIRD_PARTY_NOTICES.md
+!/DSP408_Control.spec
+!/START_DSP408FIR_CONTROL.cmd
+!/START_MAC.command
+!/START_DSP408_CONTROL.cmd
+!/main.py
+!/pytest.ini
+!/requirements*.txt
+!/docs/
+!/dsp408/
+!/packaging/
+!/tools/
+!/.github/
+
+# Documentation is curated; local working material stays outside Git.
+/docs/*
+!/docs/TROUBLESHOOTING.md
+
+# Only release-maintenance tools are distributed.
+/tools/*
+!/tools/README.md
+!/tools/build_icons.py
+!/tools/build_macos.py
+!/tools/build_macos_icon.py
+!/tools/build_windows.ps1
+!/tools/collect_qt_notices.py
+!/tools/prepare_release_assets.py
+!/tools/release_version.py
+!/tools/verify_help_license.py
+!/tools/verify_installer_copies.py
+!/tools/verify_installer_running.py
+!/tools/verify_installer_update.py
+!/tools/verify_macos_bundle.py
+!/tools/verify_windows_release.py
+/requirements-research.txt
+
+# Generated files and secrets at any depth
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12

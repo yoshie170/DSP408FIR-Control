@@ -108,4 +108,4 @@ certificates and signing credentials do not belong in this repository.
 
 Neither building nor package verification connects to a DSP. Native startup,
 Finder launch, real Ethernet and HID validation remain separate acceptance checks.
-See [port status](../../docs/MACOS_PORT.md).
+For user issues, see [troubleshooting](../../docs/TROUBLESHOOTING.md).
