@@ -1,4 +1,17 @@
-# macOS preview build
+# macOS installation and build guide
+
+## Install the DMG
+
+Download **DSP408FIR-Control-0.9.1-macOS-arm64.dmg** from
+[Releases](https://github.com/yoshie170/DSP408FIR-Control/releases/latest).
+Open the disk image, drag **DSP408FIR Control** to **Applications** and launch it
+from there. The package includes its runtime; Python, Homebrew and Terminal
+commands are not required to use it.
+
+The available package targets Apple Silicon and macOS 14.4+. USB is currently
+unavailable on macOS; the connection option is Ethernet. Intel packaging remains
+a separate target for future distribution. The sections below are for running
+or building from source.
 
 ## Start without installing Python manually
 
@@ -17,18 +30,21 @@ is required. Bootstrap files stay under `work/macos-bootstrap/`; the isolated
 environment is `.venv-macos-auto`. The launcher does not modify shell profiles.
 It starts the application normally in DEMO; it never connects to a DSP itself.
 
-This launcher has passed shell syntax and offline host-guard checks on Windows;
-its first native Mac run remains to be verified.
+The launcher has passed shell syntax/offline host-guard checks on Windows and
+has been successfully started on an M5 Mac. Source launch and frozen-package
+validation are separate checks.
 
 `macos-preview.yml.template` is an optional manual GitHub Actions build template.
 It is inactive until a repository maintainer installs it under `.github/workflows/`
-with the required workflow permission. No downloadable `.app` is claimed yet.
+with the required workflow permission. This template is separate from the DMG
+published in Releases.
 
 ## Building from source (developers)
 
-Native builds are prepared for **arm64** (Apple Silicon, including M5) and,
-separately, **x86_64** (Intel). This pipeline has not yet been run on a Mac.
-It is not a published, hardware-validated macOS release.
+The build configuration supports **arm64** (Apple Silicon, including M5) and,
+separately, **x86_64** (Intel). Only the arm64 DMG is currently distributed.
+The verification results for a particular build and real DSP connection must
+be assessed separately from the availability of that package.
 
 Use macOS **14.4 or newer**, matching the Qt 6.12 minimum. Install a native
 Python 3.14 interpreter for the target architecture and Apple's command-line
