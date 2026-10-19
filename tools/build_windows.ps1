@@ -9,12 +9,13 @@ if (-not $Python) { $Python = Join-Path $dspProjectRoot '.venv\Scripts\python.ex
 if (-not $OutputDirectory) { $OutputDirectory = Join-Path $dspProjectRoot 'dist' }
 $OutputDirectory = [IO.Path]::GetFullPath($OutputDirectory)
 if (-not $IsccPath) {
+    $dspCompilerOnPath = Get-Command ISCC.exe -ErrorAction SilentlyContinue
     $dspCompilerCandidates = @(
-        (Join-Path $dspProjectRoot 'work\release-v147\toolchain\inno\ISCC.exe'),
         (Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'),
-        (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe')
+        (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
+        $dspCompilerOnPath.Source
     )
-    $IsccPath = $dspCompilerCandidates | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } | Select-Object -First 1
+    $IsccPath = $dspCompilerCandidates | Where-Object { $_ -and (Test-Path -LiteralPath $_ -PathType Leaf) } | Select-Object -First 1
 }
 if (-not $IsccPath -or -not (Test-Path -LiteralPath $IsccPath -PathType Leaf)) { throw 'Install Inno Setup or pass -IsccPath.' }
 if (-not (Test-Path -LiteralPath $Python -PathType Leaf)) { throw 'Python environment missing.' }
@@ -28,7 +29,7 @@ try {
     if ($LASTEXITCODE -ne 0 -or $dspReleaseVersion -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid release version.' }
     & $Python tools\prepare_release_assets.py
     if ($LASTEXITCODE -ne 0) { throw 'License collection failed.' }
-    & $Python -m PyInstaller --noconfirm --distpath $OutputDirectory --workpath work\release-v147\build-final DSP408_Control.spec
+    & $Python -m PyInstaller --noconfirm --distpath $OutputDirectory --workpath build\windows DSP408_Control.spec
     if ($LASTEXITCODE -ne 0) { throw 'Application build failed.' }
     $dspAppSource = Join-Path $OutputDirectory 'DSP408FIR Control'
     $dspSetupOutput = Join-Path $OutputDirectory 'installer'
