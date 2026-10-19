@@ -8,10 +8,9 @@ Open the disk image, drag **DSP408FIR Control** to **Applications** and launch i
 from there. The package includes its runtime; Python, Homebrew and Terminal
 commands are not required to use it.
 
-The available package targets Apple Silicon and macOS 14.4+. USB is currently
-unavailable on macOS; the connection option is Ethernet. Intel packaging remains
-a separate target for future distribution. The sections below are for running
-or building from source.
+The available package targets Apple Silicon and macOS 14.4+, with USB HID and
+Ethernet connections. Intel packaging remains a separate target for future
+distribution. The sections below are for running or building from source.
 
 ## Start without installing Python manually
 
@@ -67,8 +66,7 @@ python main.py
 The dependency pins are a candidate toolchain pending native validation.
 Do not install the Windows lock file on macOS. Confirm the interpreter before
 building: `python -c 'import platform; print(platform.machine())'` should print
-`arm64` on M5. The preview offers DEMO and Ethernet; USB remains disabled until
-its HID behavior has been tested on macOS.
+`arm64` on M5. The application offers DEMO/OFFLINE, USB HID and Ethernet.
 
 ## Build and verify
 
