@@ -21,6 +21,8 @@ ApplicationWindow {
     property int comparisonRequested: -1
     property bool showConnection: false
     property bool closeApproved: false
+    property bool startupNoticeEnabled: false
+    onStartupNoticeEnabledChanged: if(startupNoticeEnabled && backend.information.showSafetyNotice)Qt.callLater(()=>helpButton.showSafety())
     DeviceSettingsDialog { id: processorSettings; anchors.centerIn: parent }
     onClosing: close => {
         if(backend.usbReadConnected && !closeApproved){
@@ -146,6 +148,7 @@ ApplicationWindow {
             ConsoleButton { objectName: 'configuration_load_json'; text: 'Load config…'; enabled: backend.modelEditingAllowed || backend.usbPresetRecallAvailable; onClicked: {if(backend.usbReadActive){if(backend.choosePrsImportReview())configPrsReview.open()}else win.requestConfiguration('file',-1)} ToolTip.visible: hovered; ToolTip.text: backend.usbReadActive?'Review and confirm configuration and FIR from a PRS file.':'Open a .prs or .json configuration. Loading requires confirmation.' }
             ConsoleButton { objectName: 'configuration_save_json'; text: 'Save config…'; onClicked: backend.savePreset(); ToolTip.visible: hovered; ToolTip.text: backend.usbReadActive?'Save the configuration and FIR as PRS, or choose a JSON snapshot.':'Save JSON, or save PRS using the original PRS template loaded with this configuration.' }
             ConsoleButton { objectName: 'connection_options'; text: 'Connection…'; outlined: true; onClicked: connectionDialog.open(); ToolTip.visible: hovered; ToolTip.text: 'Connect or disconnect the processor.' }
+            HelpButton { id: helpButton }
             ConsoleButton { visible: backend.developerTools; text: 'Send'; enabled: false; opacity: .4; ToolTip.visible: hovered; ToolTip.text: 'Unavailable for this connection.' }
         }
     }

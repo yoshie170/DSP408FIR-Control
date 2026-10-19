@@ -21,6 +21,8 @@ from dsp408.readback_audit import audit_readback
 from dsp408.device_utilities import EditingLock, generator_request, lock_request, unlock_request,input_selection_request,input_selection_read_request
 
 class Controller(QObject):
+    @Property(QObject,constant=True)
+    def information(self):return self._information
     @Property(str,constant=True)
     def applicationName(self):
         from dsp408.app_paths import application_name
@@ -66,6 +68,8 @@ class Controller(QObject):
         self._dynamics_display=self._preferences.dynamics_display()
         self._ambient_temperature=self._preferences.ambient_temperature()
         self._delay_air=self._preferences.delay_air_conditions()
+        from dsp408.application_info import ApplicationInfo
+        self._information=ApplicationInfo(self,self._preferences)
         self._output_db=[-100.0]*12;self._peaks=[-100.0]*12;self._peak_hold=[0]*12
         self._peq_cache=(None,[],[])
         self._peq_compared=[];self._comparison_cache={};self._xover_compared=[];self._xover_curve_cache={}

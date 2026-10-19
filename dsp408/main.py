@@ -42,6 +42,8 @@ def main():
     engine=create_engine(controller);window=engine.rootObjects()[0];window.resize(args.width,args.height);window.setProperty('tab',args.tab)
     window.setProperty('rtaRequested',args.rta);window.setProperty('comparisonRequested',args.compare)
     window.setProperty('showConnection',args.connection_dialog)
+    # Explicit render/package automation is noninteractive and never connects.
+    if not (args.smoke or args.screenshot or args.verify_package):window.setProperty('startupNoticeEnabled',True)
     if args.verify_package:
         def verify_package():
             try:

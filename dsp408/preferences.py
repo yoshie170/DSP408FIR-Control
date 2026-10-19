@@ -85,6 +85,13 @@ class Preferences:
         from dsp408.delay import checked_air_conditions
         self._save(self._updated(delay_air_conditions=checked_air_conditions(value)))
 
+    def safety_notice_dismissed(self):
+        return self._read().get('safety_notice_dismissed') is True
+
+    def save_safety_notice_dismissed(self,value):
+        if type(value) is not bool:raise ValueError('Choose whether to show the startup notice.')
+        self._save(self._updated(safety_notice_dismissed=value))
+
     def _updated(self,**changes):
         saved=self._read();data={'schema':1,'theme':self.theme()}
         # Preserve all known optional preferences across unrelated UI edits.
@@ -93,7 +100,8 @@ class Preferences:
                            ('network_source_ip',self.network_source_ip),
                            ('dynamics_display',self.dynamics_display),
                            ('ambient_temperature',self.ambient_temperature),
-                           ('delay_air_conditions',self.delay_air_conditions)):
+                           ('delay_air_conditions',self.delay_air_conditions),
+                           ('safety_notice_dismissed',self.safety_notice_dismissed)):
             if key in saved:data[key]=reader()
         data.update(changes)
         return data
