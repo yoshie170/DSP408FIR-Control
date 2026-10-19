@@ -62,7 +62,7 @@ Rectangle {
         function eqY(g) { return gy(bounded(g)) }
         onPaint: {
             var ctx=getContext('2d');ctx.reset();var left=36,top=20,w=plotWidth(),h=height-42
-            ctx.font="10px 'Segoe UI'";ctx.fillStyle=Theme.color('#8aa2b3', backend.lightTheme)
+            ctx.font="10px '"+backend.uiFontFamily+"'";ctx.fillStyle=Theme.color('#8aa2b3', backend.lightTheme)
             var gridCount=Math.floor((root.axisMaximum-root.axisMinimum)/root.axisStep)
             for(var grid=0;grid<=gridCount;grid++) {var g=root.axisMinimum+grid*root.axisStep;var zero=Math.abs(g)<root.axisStep*.001;var y=gy(g);ctx.strokeStyle=zero?Theme.color('#406376', backend.lightTheme):Theme.color('#233744', backend.lightTheme);ctx.setLineDash(zero?[3,4]:[]);ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(left+w,y);ctx.stroke();ctx.fillText((zero?0:g).toFixed(root.phase?0:root.magnitudeDecimals),0,y+3)}
             ctx.setLineDash([])
@@ -121,9 +121,9 @@ Rectangle {
                 var selected=b===root.band,radius=selected?root.selectedNodeRadius:6
                 if(selected){ctx.strokeStyle=Theme.color('#e9f7ff', backend.lightTheme);ctx.lineWidth=2;ctx.beginPath();ctx.arc(fx(f.frequency),nodeY(f.gain),radius+4,0,Math.PI*2);ctx.stroke()}
                 ctx.fillStyle=colors[b];ctx.beginPath();ctx.arc(fx(f.frequency),nodeY(f.gain),radius,0,Math.PI*2);ctx.fill()
-                ctx.fillStyle=Theme.onTrace(backend.lightTheme);ctx.font=(selected?'bold 12px':'10px')+" 'Segoe UI'";ctx.textAlign='center';ctx.fillText(String(b+1),fx(f.frequency),nodeY(f.gain)+4);ctx.textAlign='left'
+                ctx.fillStyle=Theme.onTrace(backend.lightTheme);ctx.font=(selected?'bold 12px':'10px')+" '"+backend.uiFontFamily+"'";ctx.textAlign='center';ctx.fillText(String(b+1),fx(f.frequency),nodeY(f.gain)+4);ctx.textAlign='left'
             }
-            ctx.font="10px 'Segoe UI'"
+            ctx.font="10px '"+backend.uiFontFamily+"'"
             ctx.fillStyle=Theme.color('#7b98ac', backend.lightTheme);ctx.fillText(root.phase?'deg':root.channelView?'XOVER + PEQ · dB':'dB',0,9);ctx.fillText('Hz',width-16,height-1)
         }
         MouseArea {

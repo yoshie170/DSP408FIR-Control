@@ -1,0 +1,5 @@
+# Candidate native toolchain. Confirm on M5 before publishing a macOS release.
+# Intentionally separate from the Windows lock and its Windows-only packages.
+PySide6==6.12.0
+hidapi==0.15.0
+PyInstaller==6.22.3

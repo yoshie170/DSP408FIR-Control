@@ -30,9 +30,10 @@ def main():
     QQuickStyle.setStyle('Basic');app=QApplication(sys.argv)
     app.setApplicationName(application_name());app.setWindowIcon(application_icon())
     app.setApplicationVersion(VERSION)
-    for font in ('segoeui.ttf','segoeuib.ttf'):
-        font_path=Path('C:/Windows/Fonts')/font
-        if font_path.exists(): QFontDatabase.addApplicationFont(str(font_path))
+    if sys.platform=='win32':
+        for font in ('segoeui.ttf','segoeuib.ttf'):
+            font_path=Path('C:/Windows/Fonts')/font
+            if font_path.exists(): QFontDatabase.addApplicationFont(str(font_path))
     controller=Controller();controller._developer_tools=args.diagnostics;app.aboutToQuit.connect(controller.shutdown)
     if args.theme:controller._theme=args.theme
     if args.preset: controller.loadPath(args.preset)

@@ -62,6 +62,7 @@ class HidReadPort:
     def end_fir_startup(self):self.startup_fir=None
 
     def open(self):
+        if sys.platform=='darwin':raise OSError('USB is not yet available in the macOS preview. Use Ethernet or DEMO.')
         if sys.platform != 'win32': raise OSError('This captured USB profile is Windows only')
         try: import hid
         except ImportError as e:

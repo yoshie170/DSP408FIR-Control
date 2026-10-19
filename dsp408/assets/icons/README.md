@@ -16,3 +16,9 @@ Odtwarzanie z katalogu projektu:
 Nie edytuj PNG/ICO osobno od SVG. Okno aplikacji i przyszły
 `DSP408_Control.spec` wskazują ten sam ICO. Samo przygotowanie ikony/spec
 nie oznacza, że zbudowano i sprawdzono końcową dystrybucję EXE.
+
+## macOS
+
+The native packaging pipeline renders Retina PNGs up to 1024 px from `dsp408.svg`
+and compiles `dsp408.icns` with macOS iconutil. Generated files are build output,
+not a separate logo source. See `packaging/macos/README.md` in the repository.

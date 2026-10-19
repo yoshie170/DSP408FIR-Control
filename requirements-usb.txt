@@ -1,2 +1,3 @@
-# Optional Windows USB read connection; DEMO works without this dependency.
+# HIDAPI dependency; the validated USB runtime profile currently supports Windows.
+# macOS bundle checks import this library without opening a device.
 hidapi==0.15.0

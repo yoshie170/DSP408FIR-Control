@@ -3,6 +3,8 @@ from pathlib import Path
 import math
 import time
 import json
+import sys
+from PySide6.QtGui import QFontDatabase
 from PySide6.QtCore import QObject,Signal,Slot,Property,QTimer
 from PySide6.QtWidgets import QFileDialog
 from dsp408.model import DeviceModel,FILTER_TYPES,CROSS_TYPES,FIR_WINDOWS,FIR_TYPES,DEQ_TYPES,DEQ_MODES,state_snapshot
@@ -31,6 +33,11 @@ class Controller(QObject):
     def applicationVersion(self):
         from dsp408.version import VERSION
         return VERSION
+    @Property(str,constant=True)
+    def uiFontFamily(self):
+        return 'Segoe UI' if sys.platform=='win32' else QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont).family()
+    @Property(bool,constant=True)
+    def usbPlatformAvailable(self):return sys.platform=='win32'
 
     changed=Signal()
     statusChanged=Signal()

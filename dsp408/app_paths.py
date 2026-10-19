@@ -34,8 +34,11 @@ def data_directory():
         if not path.is_absolute():raise ValueError('DSP408_DATA_DIR must be an absolute path')
         return path
     if getattr(sys,'frozen',False):
-        base=Path(os.environ.get('LOCALAPPDATA') or Path.home()/'AppData'/'Local')
-        data=base/'gremium.tech'/'DSP408 Control'
+        if sys.platform=='darwin':
+            data=Path.home()/'Library'/'Application Support'/'gremium.tech'/'DSP408FIR Control'
+        else:
+            base=Path(os.environ.get('LOCALAPPDATA') or Path.home()/'AppData'/'Local')
+            data=base/'gremium.tech'/'DSP408 Control'
         instance=installed_instance_id()
         return data/'instances'/instance if instance else data
     return Path(__file__).resolve().parents[1]/'work'

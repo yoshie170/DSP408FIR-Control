@@ -20,7 +20,7 @@ Rectangle {
         onPaint: {
             var c=getContext('2d');c.reset();if(!preview.actual)return
             curvePaintCount++
-            c.font="9px 'Segoe UI'";c.fillStyle=Theme.color('#e7b458',backend.lightTheme)
+            c.font="9px '"+backend.uiFontFamily+"'";c.fillStyle=Theme.color('#e7b458',backend.lightTheme)
             c.fillText('KNEE '+preview.knee.toFixed(1)+' dB',2,9)
             c.fillStyle='rgba(216,173,82,0.13)';c.fillRect(px(preview.threshold-preview.knee/2),16,px(preview.threshold+preview.knee/2)-px(preview.threshold-preview.knee/2),height-32)
             c.strokeStyle=Theme.color('#526c79',backend.lightTheme);c.lineWidth=1;c.beginPath();c.moveTo(px(preview.threshold),16);c.lineTo(px(preview.threshold),height-16);c.stroke()
@@ -32,7 +32,7 @@ Rectangle {
                     if(!i)c.moveTo(x,y);else c.lineTo(x,y)
                 }c.stroke()
             }
-            c.setLineDash([]);c.fillStyle=Theme.color('#91aebd',backend.lightTheme);c.font="8px 'Segoe UI'"
+            c.setLineDash([]);c.fillStyle=Theme.color('#91aebd',backend.lightTheme);c.font="8px '"+backend.uiFontFamily+"'"
             c.fillText('16 dB · dashed: hard',2,height-2)
         }
     }

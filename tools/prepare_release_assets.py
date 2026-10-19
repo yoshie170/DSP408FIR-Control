@@ -44,7 +44,11 @@ def prepare(root):
         for item in package.files or ():
             if '/licenses/' in item.as_posix():
                 shutil.copyfile(package.locate_file(item),folder/Path(item).name)
-    shutil.copyfile(Path(sys.base_prefix)/'LICENSE.txt',target/'Python-LICENSE.txt')
+    python_license=Path(sys.base_prefix)/'LICENSE.txt'
+    if python_license.is_file():
+        shutil.copyfile(python_license,target/'Python-LICENSE.txt')
+    elif not (target/'Python-LICENSE.txt').is_file():
+        raise FileNotFoundError('Python license missing: provide the complete PSF license in assets/licenses/Python-LICENSE.txt')
     lines += ['',f'Python: {sys.version.split()[0]}',
               f'OpenSSL: {ssl.OPENSSL_VERSION}; Apache-2.0 (OpenSSL/LICENSE.txt).',
               'Qt third-party authors and full notices: Qt/THIRD_PARTY_NOTICES.txt; sources listed in Qt/sources.json.',

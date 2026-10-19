@@ -59,7 +59,7 @@ Rectangle {
         function clamp(v) { return Math.max(root.low,Math.min(root.high,v)) }
         onPaint: {
             paintCount++
-            var c=getContext('2d');c.reset();c.font="9px 'Segoe UI'"
+            var c=getContext('2d');c.reset();c.font="9px '"+backend.uiFontFamily+"'"
             for(var value=root.low;value<=root.high;value+=20) {
                 c.strokeStyle=value===0?Theme.color('#405866', backend.lightTheme):Theme.color('#20343e', backend.lightTheme);c.lineWidth=1;c.beginPath()
                 c.moveTo(px(value),16);c.lineTo(px(value),height-26)

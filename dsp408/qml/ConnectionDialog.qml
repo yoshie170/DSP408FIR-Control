@@ -10,7 +10,7 @@ ConsoleDialog {
     objectName: 'connection_dialog'; title: 'CONNECTION'
     width: Math.min(620,parent.width-40); height: Math.min(440,parent.height-32); modal: true
     property string targetMessage: ''
-    readonly property bool ethernet: transport.currentIndex===1
+    readonly property bool ethernet: transport.currentText==='Ethernet'
     readonly property bool targetReady: !ethernet || backend.ethernetTargetValid(targetIp.text,targetId.value,'')
     function connect(readOnly) {
         if(ethernet) {
@@ -24,7 +24,7 @@ ConsoleDialog {
     }
     onOpened: {
         targetIp.text=backend.networkTarget.ip;targetId.value=backend.networkTarget.device_id
-        if(backend.usbReadActive)transport.currentIndex=backend.activeTransport==='ethernet'?1:0
+        if(backend.usbReadActive)transport.currentIndex=Math.max(0,transport.find(backend.activeTransport==='ethernet'?'Ethernet':'USB'))
         targetMessage=''
     }
     standardButtons: Dialog.Close
@@ -35,7 +35,7 @@ ConsoleDialog {
         RowLayout {
             Layout.fillWidth: true; spacing: 12
             Label { text: 'Transport'; color: Theme.color('#95b3c4',backend.lightTheme) }
-            ComboBox { id: transport; objectName: 'connection_transport'; model: ['USB','Ethernet']; enabled: !backend.usbReadActive; Layout.fillWidth: true; implicitHeight: 34 }
+            ComboBox { id: transport; objectName: 'connection_transport'; model: backend.usbPlatformAvailable?['USB','Ethernet']:['Ethernet']; enabled: !backend.usbReadActive; Layout.fillWidth: true; implicitHeight: 34 }
         }
         RowLayout {
             Layout.fillWidth: true; spacing: 12
@@ -52,7 +52,7 @@ ConsoleDialog {
             }
             ConsoleButton { objectName: 'save_network_target'; text: 'Save target'; Layout.alignment: Qt.AlignBottom; enabled: !backend.usbReadActive && backend.networkTargetValid(targetIp.text,targetId.value); onClicked: root.targetMessage=backend.setEthernetTarget(targetIp.text,targetId.value,'')?'Connection target saved':backend.displayMessage }
         }
-        Label { objectName: 'network_target_message'; text: root.targetMessage || (root.ethernet?'Set the PC address in Windows network settings. The app uses Windows routing.':'Choose the ID of the connected processor.'); color: Theme.color('#95b3c4',backend.lightTheme); font.pixelSize: 11; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+        Label { objectName: 'network_target_message'; text: root.targetMessage || (root.ethernet?'Set the computer address in system network settings. The app uses system routing.':'Choose the ID of the connected processor.'); color: Theme.color('#95b3c4',backend.lightTheme); font.pixelSize: 11; Layout.fillWidth: true; wrapMode: Text.WordWrap }
         Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Theme.color('#294451',backend.lightTheme) }
         RowLayout {
             Layout.fillWidth: true; spacing: 12

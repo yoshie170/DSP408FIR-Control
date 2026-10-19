@@ -65,7 +65,7 @@ ColumnLayout {
             function px(hz) { return 36+Math.log(hz/backend.options.frequencyMin)/Math.log(backend.options.frequencyMax/backend.options.frequencyMin)*(width-49) }
             function py(db) { return 20+(18-Math.max(-60,Math.min(18,db)))/78*(height-42) }
             onPaint: {
-                var c=getContext('2d');c.reset();c.font="9px 'Segoe UI'"
+                var c=getContext('2d');c.reset();c.font="9px '"+backend.uiFontFamily+"'"
                 var gridStep=height-42<150?12:6
                 for(var db=-60;db<=18;db+=gridStep){c.strokeStyle=db===0?Theme.color('#47606b', backend.lightTheme):Theme.color('#253a46', backend.lightTheme);c.lineWidth=1;c.beginPath();c.moveTo(36,py(db));c.lineTo(width-13,py(db));c.stroke();c.fillStyle=Theme.color('#8eaabb', backend.lightTheme);c.fillText(String(db),3,py(db)+3)}
                 var ticks=[20,50,100,200,500,1000,2000,5000,10000,20000]

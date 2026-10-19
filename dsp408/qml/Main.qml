@@ -9,7 +9,7 @@ ApplicationWindow {
     title: backend.applicationName+' - '+backend.connectionLabel
     color: Theme.color('#0b1319', backend.lightTheme)
     palette.window: Theme.color('#0b141c', backend.lightTheme); palette.windowText: Theme.color('#e3eef6', backend.lightTheme); palette.base: Theme.color('#13232f', backend.lightTheme); palette.text: Theme.color('#e3eef6', backend.lightTheme); palette.button: Theme.color('#213441', backend.lightTheme); palette.buttonText: Theme.color('#e3eef6', backend.lightTheme); palette.highlight: Theme.color('#087dab', backend.lightTheme); palette.highlightedText: '#ffffff'
-    font.family: 'Segoe UI'; font.pixelSize: 12
+    font.family: backend.uiFontFamily; font.pixelSize: 12
     property int band: 0
     property int tab: 11
     property int slot: 0

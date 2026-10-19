@@ -12,7 +12,7 @@ a=Analysis(
     [str(root/'main.py')],pathex=[str(root)],binaries=[],
     datas=[(str(root/'dsp408'/'qml'),'dsp408/qml'),
            (str(root/'dsp408'/'assets'),'dsp408/assets')],
-    hiddenimports=['hid','PySide6.QtSvg'],hookspath=[str(root/'packaging'/'windows'/'hooks')],runtime_hooks=[],
+    hiddenimports=['hid','PySide6.QtSvg'],hookspath=[str(root/'packaging'/'hooks')],runtime_hooks=[],
     excludes=['pytest','capstone','pefile','pypdf','PySide6.QtWebEngineCore',
               'PySide6.QtWebEngineWidgets','PySide6.QtWebEngineQuick'],
 )
