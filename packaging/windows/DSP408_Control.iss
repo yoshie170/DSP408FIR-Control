@@ -43,6 +43,8 @@ OutputDir={#SetupOutput}
 OutputBaseFilename=DSP408FIR-Control-{#AppVersion}-Setup
 Compression=lzma2
 SolidCompression=yes
+; Manual closure only: preserve the application's connected-DSP confirmation.
+; application_use.iss blocks updates/uninstall while target files are in use.
 CloseApplications=no
 RestartApplications=no
 UninstallDisplayName={code:DSPDisplayName}
@@ -108,6 +110,8 @@ polish.UnsafeDirectory=Wybierz pusty folder albo folder zarejestrowanej niezale�
 english.UnsafeDirectory=Choose an empty folder or the folder of a registered independent DSP408FIR Control copy.
 polish.UseCopyAction=Aby wybrać inny folder, wróć i wybierz instalację drugiej niezależnej kopii.
 english.UseCopyAction=To choose another folder, go back and select the independent copy action.
+polish.ApplicationInUse=DSP408FIR Control jest uruchomiony lub pliki tej instalacji są zajęte albo niedostępne.%n%nZapisz potrzebne konfiguracje, rozłącz DSP i zamknij tę kopię programu. Następnie wybierz Ponów próbę.%n%nFolder: %1%n%nInstalator nie zamknie aplikacji automatycznie. Jeśli program jest już zamknięty, sprawdź uprawnienia do tego folderu.
+english.ApplicationInUse=DSP408FIR Control is running, or this installation's files are in use or inaccessible.%n%nSave any configurations you need, disconnect the DSP and close this copy of the application. Then choose Retry.%n%nFolder: %1%n%nSetup will not close the application automatically. If it is already closed, check access permissions for this folder.
 
 [Code]
 #include "update.iss"

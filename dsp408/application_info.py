@@ -11,6 +11,7 @@ NAME = 'DSP408FIR Control'
 AUTHOR = 'Łukasz Białas'
 COPYRIGHT = 'Copyright © 2026 '+AUTHOR
 GITHUB = 'https://github.com/yoshie170/DSP408-Control'
+WEBSITE = 'https://gremium.tech'
 INDEPENDENCE = ('Independent software for the t.racks FIR DSP 408. '
                 'Not officially affiliated with, endorsed by or supported by the device manufacturer.')
 SAFETY_NOTICE = ('Incorrect DSP settings can damage loudspeakers, amplifiers or other connected equipment. '
@@ -69,7 +70,7 @@ class ApplicationInfo(QObject):
     @Property('QVariantMap',constant=True)
     def metadata(self):
         return {'name':NAME,'version':VERSION,'build':BUILD,'author':AUTHOR,'copyright':COPYRIGHT,
-                'license':'MIT','github':GITHUB,'website':'https://gremium.tech',
+                'license':'MIT','github':GITHUB,'website':WEBSITE,
                 'technologies':f'Python {platform.python_version()} · PySide6 {PySide6.__version__} · Qt {qVersion()} / QML',
                 'independence':INDEPENDENCE,
                 'qtCopyright':'Qt / Qt for Python © The Qt Company Ltd. and other contributors. See Open Source Licenses.'}
@@ -113,8 +114,10 @@ class ApplicationInfo(QObject):
     @Slot(result=bool)
     def openGithub(self):return self._open_url(GITHUB)
     @Slot(result=bool)
+    def openWebsite(self):return self._open_url(WEBSITE)
+    @Slot(result=bool)
     def reportIssue(self):return self._open_url(GITHUB+'/issues/new')
     def _open_url(self,url):
         ok=QDesktopServices.openUrl(QUrl(url))
-        self._status='' if ok else 'Could not open the browser. Use the GitHub link shown in About.'
+        self._status='' if ok else 'Could not open the browser. Open this address manually: '+url
         self.changed.emit();return ok

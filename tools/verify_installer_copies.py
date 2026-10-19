@@ -80,6 +80,7 @@ def verify(compiler,output):
     code=code.replace("DSPBaseAppId = '{5A2478C4-CECE-4280-A896-5AECE3478B04}'", "DSPBaseAppId = '"+identity+"'")
     code=code.replace("DSPCopyAppPrefix = 'DSP408FIR-copy-'", "DSPCopyAppPrefix = '"+copy_prefix+"'")
     code=code.replace('#include "version_compare.iss"',f'#include "{source / "version_compare.iss"}"')
+    code=code.replace('#include "application_use.iss"',f'#include "{source / "application_use.iss"}"')
     code=code.replace('procedure InitializeWizard;','procedure DSPFixtureWizard;')
     code=code.replace('function NextButtonClick(','function DSPFixtureNextButtonClick(')
     # Only this fixture confirms its own uninstall and runs its child silently.

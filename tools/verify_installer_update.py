@@ -63,6 +63,7 @@ def verify_wizard(compiler,output):
     messages=installer.split('[CustomMessages]',1)[1].split('[Code]',1)[0]
     production=(ROOT/'packaging/windows/update.iss').read_text(encoding='utf-8')
     production=production.replace('#include "version_compare.iss"',f'#include "{ROOT / "packaging/windows/version_compare.iss"}"')
+    production=production.replace('#include "application_use.iss"',f'#include "{ROOT / "packaging/windows/application_use.iss"}"')
     for name in ('InitializeSetup','InitializeWizard','CurPageChanged','NextButtonClick','CancelButtonClick','ShouldSkipPage','PrepareToInstall'):
         production=production.replace(name,'DSPProduction'+name)
     source=output/'wizard-test.iss'

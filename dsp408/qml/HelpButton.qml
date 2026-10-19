@@ -34,6 +34,7 @@ ConsoleButton {
         MenuSeparator { contentItem: Rectangle { implicitHeight: 1; color: Theme.color('#294451',backend.lightTheme) } }
         Action { objectName: 'help_copy_diagnostics'; text: 'Copy Diagnostics'; onTriggered: { about.open();root.info.copyDiagnostics() } }
         Action { objectName: 'help_report_issue'; text: 'Report an Issue (GitHub)'; onTriggered: root.info.reportIssue() }
+        Action { objectName: 'help_website'; text: 'gremium.tech'; onTriggered: root.info.openWebsite() }
     }
     ConsoleDialog {
         id: about; objectName: 'about_dialog'; anchors.centerIn: parent
@@ -47,7 +48,13 @@ ConsoleButton {
                     spacing: 4; Layout.fillWidth: true
                     Label { text: root.info.metadata.name; font.pixelSize: 23; font.bold: true }
                     Label { objectName: 'about_version'; text: 'Version '+root.info.metadata.version+' · Build '+root.info.metadata.build; color: Theme.color('#39c9e4',backend.lightTheme) }
-                    Label { text: root.info.metadata.author+' · gremium.tech'; color: Theme.color('#9ab5c6',backend.lightTheme) }
+                    Label {
+                        objectName: 'about_website'
+                        text: '<style>a { color: '+Theme.color('#25b7d8',backend.lightTheme)+'; }</style>'+root.info.metadata.author+' · <a href="'+root.info.metadata.website+'">gremium.tech</a>'
+                        textFormat: Text.RichText; linkColor: Theme.color('#25b7d8',backend.lightTheme)
+                        color: Theme.color('#9ab5c6',backend.lightTheme)
+                        onLinkActivated: root.info.openWebsite()
+                    }
                 }
             }
             Label { text: root.info.metadata.copyright; Layout.fillWidth: true; wrapMode: Text.WordWrap }

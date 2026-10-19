@@ -10,6 +10,7 @@ var
   DSPUpdatePage: TInputOptionWizardPage;
 
 #include "version_compare.iss"
+#include "application_use.iss"
 
 function DSPValidInstance(Value: String): Boolean;
 var I: Integer;
@@ -188,6 +189,7 @@ begin
         Result := False;
         Uninstaller := DSPCheckedUninstaller(DSPInstalledDirectory, DSPInstalledUninstaller);
         if Uninstaller = '' then begin MsgBox(CustomMessage('UninstallUnavailable'), mbError, MB_OK); Exit; end;
+        if not DSPRequireClosed(DSPInstalledDirectory) then Exit;
         if MsgBox(FmtMessage(CustomMessage('ConfirmUninstall'), [DSPInstalledDirectory]), mbConfirmation, MB_YESNO) <> IDYES then Exit;
         if Exec(Uninstaller, '/NORESTART', DSPInstalledDirectory, SW_SHOWNORMAL, ewWaitUntilTerminated, ExitCode) then begin
           if ExitCode = 0 then begin DSPExitAfterUninstall := True; WizardForm.Close; end;
@@ -198,7 +200,10 @@ begin
       if DSPCopyMode then begin
         DSPCopyInstance := DSPNewCopyId;
         WizardForm.DirEdit.Text := ExpandConstant('{autopf}\DSP408FIR Control Copy ') + Copy(DSPNewCopyId, 1, 8);
-      end else WizardForm.DirEdit.Text := DSPInstalledDirectory;
+      end else begin
+        WizardForm.DirEdit.Text := DSPInstalledDirectory;
+        Result := DSPRequireClosed(DSPInstalledDirectory);
+      end;
     end;
   end;
   if CurPageID = wpSelectDir then begin
@@ -215,6 +220,7 @@ end;
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
   Result := DSPValidateDirectory;
+  if Result = '' then Result := DSPApplicationUseError(WizardDirValue);
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
