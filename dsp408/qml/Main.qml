@@ -160,7 +160,7 @@ ApplicationWindow {
                 MouseArea { anchors.fill: parent; hoverEnabled: true; acceptedButtons: Qt.NoButton; ToolTip.visible: containsMouse; ToolTip.text: backend.usbReadActive?'DSP resource usage':'Available when connected to the DSP' }
             }
             Label {
-                objectName: 'app_copyright'; text: '<style>a { color: '+Theme.color('#25b7d8',backend.lightTheme)+'; }</style>Copyright © 2026 Łukasz Białas · <a href="https://gremium.tech">gremium.tech</a>'
+                objectName: 'app_copyright'; text: '<style>a { color: '+Theme.color('#25b7d8',backend.lightTheme)+'; }</style>v'+backend.applicationVersion+' · Copyright © 2026 Łukasz Białas · <a href="https://gremium.tech">gremium.tech</a>'
                 textFormat: Text.RichText; color: Theme.color('#94b2c5', backend.lightTheme); linkColor: Theme.color('#25b7d8',backend.lightTheme); font.pixelSize: 10
                 onLinkActivated: link => Qt.openUrlExternally(link)
             }

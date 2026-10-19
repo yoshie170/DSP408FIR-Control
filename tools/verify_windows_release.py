@@ -14,6 +14,8 @@ import time
 import winreg
 
 ROOT=Path(__file__).resolve().parents[1]
+import runpy
+VERSION=runpy.run_path(str(ROOT/'dsp408/version.py'))['VERSION']
 WORK=ROOT/'work/release-verification/windows'
 KEY=r'Software\Microsoft\Windows\CurrentVersion\Uninstall\{5A2478C4-CECE-4280-A896-5AECE3478B04}_is1'
 
@@ -58,7 +60,7 @@ def probe(executable,label):
 def verify():
     if not ctypes.windll.shell32.IsUserAnAdmin():
         raise RuntimeError('The Program Files installer test requires an elevated shell; no UAC prompt is started automatically')
-    setup=ROOT/'dist/installer/DSP408FIR-Control-0.9.0-Setup.exe'
+    setup=ROOT/f'dist/installer/DSP408FIR-Control-{VERSION}-Setup.exe'
     bundle=ROOT/'dist/DSP408FIR Control'
     destination=(WORK/'install-test').resolve()
     assert destination.is_relative_to(WORK.resolve()) and destination.parent==WORK.resolve()

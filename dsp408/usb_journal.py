@@ -35,7 +35,8 @@ class DurableJournal:
                                          'bank_restore_baseline','bank_restore_verified','bank_restore_failed',
                                          'fir_trial_baseline','fir_trial_verified','fir_trial_failed',
                                          'fir_import_baseline','fir_import_verified','fir_import_failed',
-                                         'output_fir_baseline','output_fir_verified','output_fir_failed')
+                                         'output_fir_baseline','output_fir_verified','output_fir_failed',
+                                         'unlock_clear_intent','unlock_clear_verified')
         if self.sync_each or critical or time.monotonic()-self.last_sync >= 1.:
             os.fsync(self.stream.fileno())
             self.last_sync = time.monotonic()

@@ -3,8 +3,10 @@
 from pathlib import Path
 import os
 import sys
+import runpy
 
 root=Path(SPECPATH)
+runpy.run_path(str(root/'tools/release_version.py'))['prepare'](root)
 icons=root/'dsp408'/'assets'/'icons'
 a=Analysis(
     [str(root/'main.py')],pathex=[str(root)],binaries=[],

@@ -21,6 +21,11 @@ from dsp408.readback_audit import audit_readback
 from dsp408.device_utilities import EditingLock, generator_request, lock_request, unlock_request,input_selection_request,input_selection_read_request
 
 class Controller(QObject):
+    @Property(str,constant=True)
+    def applicationVersion(self):
+        from dsp408.version import VERSION
+        return VERSION
+
     changed=Signal()
     statusChanged=Signal()
     metersChanged=Signal()
@@ -440,9 +445,10 @@ class Controller(QObject):
         except ValueError as error:self.notify(str(error));return False
 
     @Slot(str,result=bool)
-    def unlockEditing(self,password):
+    @Slot(str,str,result=bool)
+    def unlockEditing(self,password,mode='permanent'):
         try:
-            request=unlock_request(password)
+            request=unlock_request(password,mode)
             if self.usbReadActive:return self._request_utility(request)
             if not self._editing_lock.unlock(password):self.notify('Incorrect password.');return False
             self.notify('Editing unlocked · DEMO');return True

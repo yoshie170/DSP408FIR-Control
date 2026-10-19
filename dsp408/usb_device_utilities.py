@@ -82,6 +82,17 @@ class DeviceUtilities:
         self.observe_system(result.data)
         return self.locked
 
+    def finish_unlock(self,request,reply):
+        """The original One Time choice follows successful ordinary unlock."""
+        if self.read_system():raise ValueError('Device lock verification failed.')
+        if request.unlock_mode=='one_time':
+            raw=self.host.port.arm_unlock_clear(request,reply.raw,self.last_system_frame)
+            self.host.record({'kind':'unlock_clear_intent','password_redacted':True})
+            self.host.port.write(raw);self.host.wait(1)
+            if self.read_system() or self.password_protected:
+                raise ValueError('Saved protection verification failed; no retry.')
+            self.host.record({'kind':'unlock_clear_verified','password_redacted':True})
+
     def authenticate_startup(self):
         """Only a user-submitted subtype0 unlock, before any configuration read."""
         host=self.host
@@ -102,12 +113,13 @@ class DeviceUtilities:
             if reply.data!=b'\0\1':raise ValueError('Unexpected authentication response.')
             self.authenticated=True
             host.record({'kind':'authentication_accepted','subtype':0,'scope':'current session; stored password protection retained'})
-            if self.read_system():raise ValueError('Device lock verification failed.')
+            self.finish_unlock(request,reply)
             self.authentication_pending=False
             host.record({'kind':'utility_completed','operation':'unlock','lock_verified':True,
-                         'parameters_unchanged':False,'configuration_read_pending':True,'password_redacted':True})
+                         'parameters_unchanged':False,'configuration_read_pending':True,'password_redacted':True,'unlock_mode':request.unlock_mode})
             self.publish(self.state(operation='unlock',completed=True));return True
         finally:
+            if request.unlock_mode=='one_time':host.port.end_unlock()
             self.running=False;self.secret_active=False;self.publish(self.state())
 
     def read_input_selection(self):
@@ -175,7 +187,10 @@ class DeviceUtilities:
                 self.authenticated=True
                 host.record({'kind':'authentication_accepted','subtype':0,'scope':'current session; stored password protection retained'})
             if request.kind=='lock':self.authenticated=False
-            locked_after = self.read_system()
+            if request.kind=='unlock':
+                self.finish_unlock(request,result)
+                locked_after=self.locked
+            else:locked_after = self.read_system()
             expected = request.kind == 'lock'
             if locked_after != expected:
                 raise ValueError('Device lock verification failed.')
@@ -191,7 +206,8 @@ class DeviceUtilities:
                          'lock_verified': True, 'parameters_unchanged': request.kind!='lock',
                          'generator_value_readback': False,
                          'input_selection_readback':request.kind=='input_selection',
-                         'password_redacted': request.kind in ('lock','unlock')})
+                         'password_redacted': request.kind in ('lock','unlock'),
+                         **({'unlock_mode':request.unlock_mode} if request.kind=='unlock' else {})})
             self.publish(self.state(operation=request.kind, completed=True))
             if request.kind == 'lock':
                 # Vendor48D954 sends SET_LOCK followed by session-end11.
@@ -203,6 +219,7 @@ class DeviceUtilities:
             self.publish(self.state(error='Device operation stopped. Reconnect to check its state.'))
             raise
         finally:
+            if request.unlock_mode=='one_time':host.port.end_unlock()
             self.running = False
             self.secret_active = False
             self.publish(self.state())

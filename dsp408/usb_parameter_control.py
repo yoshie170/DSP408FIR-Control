@@ -79,19 +79,37 @@ def prepare(raw, wanted, fir_bank=None):
 
 
 class ParameterPolicy:
-    def __init__(self): self.armed = None;self.preset_armed=None;self.prs_permit=None;self.prs_index=0;self.prs_armed=None;self.startup_fir=None;self.utility_armed=None
+    def __init__(self): self.armed = None;self.preset_armed=None;self.prs_permit=None;self.prs_index=0;self.prs_armed=None;self.startup_fir=None;self.utility_armed=None;self.utility_request=None;self.unlock_pending=None
 
     def arm_utility(self,request):
         from dsp408.device_utilities import validate_utility
         validate_utility(request)
-        if any(x is not None for x in (self.armed,self.preset_armed,self.prs_permit,self.startup_fir,self.utility_armed)):
+        if any(x is not None for x in (self.armed,self.preset_armed,self.prs_permit,self.startup_fir,self.utility_armed,self.unlock_pending)):
             raise ValueError('Another USB operation is armed')
         self.utility_armed=request.packet
+        self.utility_request=request
+
+    def arm_unlock_clear(self,request,accepted,unlocked):
+        from dsp408.device_utilities import unlock_clear_packet,session_lock,system_lock
+        from dsp408.wire_research import decode_editor_frame
+        if request is not self.unlock_pending or self.utility_armed is not None:
+            raise ValueError('No matching One Time authentication in progress')
+        auth=decode_editor_frame(accepted);status=decode_editor_frame(unlocked)
+        if (auth.address_bytes!=b'\1\0' or auth.command!=0x2D or auth.data!=b'\0\1'
+                or status.address_bytes!=b'\1\0' or status.command!=0x2C
+                or session_lock(status.data) or not system_lock(status.data)):
+            raise ValueError('Accepted authentication and fresh unlocked status required')
+        raw=unlock_clear_packet(request)
+        self.unlock_pending=None;self.utility_armed=raw
+        return raw
+
+    def end_unlock(self):
+        self.unlock_pending=None;self.utility_request=None;self.utility_armed=None
 
     def begin_fir_startup(self,*,source_display=False):
         from dsp408.usb_control_startup import StartupFirWindow,SourceStartupFirWindow
         if type(source_display) is not bool:raise ValueError('Explicit FIR strategy required')
-        if self.utility_armed is not None or self.startup_fir is not None or self.armed is not None or self.preset_armed is not None or self.prs_permit is not None:
+        if self.unlock_pending is not None or self.utility_armed is not None or self.startup_fir is not None or self.armed is not None or self.preset_armed is not None or self.prs_permit is not None:
             raise ValueError('Another USB operation is armed')
         self.startup_fir=SourceStartupFirWindow() if source_display else StartupFirWindow()
 
@@ -113,7 +131,7 @@ class ParameterPolicy:
     def begin_prs_import(self,permit):
         from dsp408.usb_transaction_permit import verify_permit
         verify_permit(permit,reconstruct=True)
-        if self.utility_armed is not None or self.startup_fir is not None or self.armed is not None or self.preset_armed is not None or self.prs_permit is not None:
+        if self.unlock_pending is not None or self.utility_armed is not None or self.startup_fir is not None or self.armed is not None or self.preset_armed is not None or self.prs_permit is not None:
             raise ValueError('Another USB operation is armed')
         self.prs_permit=permit;self.prs_index=0
 
@@ -137,7 +155,7 @@ class ParameterPolicy:
     def arm_preset_request(self,raw,slot,target=None):
         from dsp408.preset_recall import checked_slot,eeprom_requests,check_target
         checked_slot(slot)
-        if self.utility_armed is not None or self.startup_fir is not None or self.armed is not None or self.preset_armed is not None or self.prs_permit is not None:raise ValueError('Another USB operation is armed')
+        if self.unlock_pending is not None or self.utility_armed is not None or self.startup_fir is not None or self.armed is not None or self.preset_armed is not None or self.prs_permit is not None:raise ValueError('Another USB operation is armed')
         if raw not in eeprom_requests(slot):
             if raw!=frame(0x20,bytes((slot,))) or target is None:raise ValueError('Request outside selected preset')
             check_target(slot,*target)
@@ -146,7 +164,7 @@ class ParameterPolicy:
     def arm_store_request(self,raw,slot,context):
         from dsp408.preset_store import validate_store_context,encode_name
         validate_store_context(slot,context)
-        if self.utility_armed is not None or self.startup_fir is not None or self.armed is not None or self.preset_armed is not None or self.prs_permit is not None:raise ValueError('Another USB operation is armed')
+        if self.unlock_pending is not None or self.utility_armed is not None or self.startup_fir is not None or self.armed is not None or self.preset_armed is not None or self.prs_permit is not None:raise ValueError('Another USB operation is armed')
         if raw!=frame(0x21,bytes((slot,))):
             if len(raw)!=23 or raw!=frame(0x26,raw[6:20]):raise ValueError('Store request outside scope')
             if encode_name(raw[6:20].decode('ascii'))!=raw[6:20]:raise ValueError('Name payload is not canonical ASCII14')
@@ -154,13 +172,16 @@ class ParameterPolicy:
 
     def arm(self, state, wanted, raw):
         packets, _ = prepare(state, wanted, getattr(self,'fir_bank',None))
-        if self.utility_armed is not None or self.startup_fir is not None or self.armed is not None or self.preset_armed is not None or self.prs_permit is not None or raw not in [p[0] for p in packets]:
+        if self.unlock_pending is not None or self.utility_armed is not None or self.startup_fir is not None or self.armed is not None or self.preset_armed is not None or self.prs_permit is not None or raw not in [p[0] for p in packets]:
             raise ValueError('Setter must belong to the current validated model change')
         self.armed = bytes(raw)
 
     def validate(self, raw):
         if self.utility_armed is not None:
             if raw!=self.utility_armed:raise ValueError('Request differs from armed utility')
+            if self.utility_request is not None and self.utility_request.kind=='unlock' and self.utility_request.unlock_mode=='one_time':
+                self.unlock_pending=self.utility_request
+            self.utility_request=None
             self.utility_armed=None
             return raw[5]!=0x19
         if self.startup_fir is not None and len(raw)>5 and raw[5]==0x56:
@@ -196,6 +217,8 @@ class HidParameterPort(HidReadPort):
 
     def arm_parameter(self, state, wanted, raw): self.policy.arm(state, wanted, raw)
     def arm_utility(self,request):self.policy.arm_utility(request)
+    def arm_unlock_clear(self,*args):return self.policy.arm_unlock_clear(*args)
+    def end_unlock(self):self.policy.end_unlock()
     def cache_fir_bank(self,raw):self.policy.fir_bank=raw
 
     def arm_preset_request(self,raw,slot,target=None):self.policy.arm_preset_request(raw,slot,target)

@@ -180,13 +180,23 @@ ColumnLayout {
         id: securityDialog; objectName: 'device_password_dialog'
         parent: Overlay.overlay; anchors.centerIn: parent; width: Math.min(460,parent.width-40)
         modal: true; title: backend.editingLocked?'Unlock':'Set password and lock'
-        onOpened: passwordField.forceActiveFocus()
+        onOpened: {unlockMode.currentIndex=0;passwordField.forceActiveFocus()}
         onClosed: {passwordField.clear();passwordRepeat.clear()}
         contentItem: ColumnLayout {
             spacing: 12
             Label { text: 'Four characters: A–Z and 0–9.'; color: Theme.color('#95b3c4', backend.lightTheme) }
             TextField { id: passwordField; objectName: 'device_password'; Layout.fillWidth: true; maximumLength: 4; echoMode: TextInput.Password; placeholderText: 'Password'; validator: RegularExpressionValidator { regularExpression: /[A-Za-z0-9]{4}/ } }
             TextField { id: passwordRepeat; objectName: 'device_password_repeat'; visible: !backend.editingLocked; Layout.fillWidth: true; maximumLength: 4; echoMode: TextInput.Password; placeholderText: 'Repeat password'; validator: RegularExpressionValidator { regularExpression: /[A-Za-z0-9]{4}/ } }
+            ComboBox {
+                id: unlockMode; objectName: 'device_unlock_mode'; Layout.fillWidth: true
+                visible: backend.usbReadActive && backend.editingLocked
+                model: ['Permanent · keep password protection', 'One Time · remove password protection']
+            }
+            Label {
+                visible: unlockMode.visible; Layout.fillWidth: true; wrapMode: Text.WordWrap
+                text: unlockMode.currentIndex===0?'Unlock this connection. The password will be required on the next connection.':'Unlock and remove the saved lock. The next connection will not require a password.'
+                color: Theme.color('#c2d4df', backend.lightTheme)
+            }
             Label { visible: backend.usbReadActive && !backend.editingLocked; text: 'Locking saves the password in the processor and disconnects control. Keep this password to reconnect and unlock.'; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: Theme.color('#c2d4df', backend.lightTheme) }
             Label { visible: backend.message==='Incorrect password.'; text: 'Incorrect password.'; color: Theme.color('#efad67', backend.lightTheme) }
             RowLayout {
@@ -195,7 +205,7 @@ ColumnLayout {
                 ConsoleButton {
                     objectName: 'device_password_apply'; text: backend.editingLocked?'Unlock':'Lock'; emphasized: true
                     enabled: passwordField.acceptableInput && (backend.editingLocked || (passwordRepeat.acceptableInput && passwordField.text.toUpperCase()===passwordRepeat.text.toUpperCase()))
-                    onClicked: {var ok=backend.editingLocked?backend.unlockEditing(passwordField.text):backend.lockEditing(passwordField.text);passwordField.clear();passwordRepeat.clear();if(ok)securityDialog.close()}
+                    onClicked: {var ok=backend.editingLocked?backend.unlockEditing(passwordField.text,unlockMode.currentIndex===0?'permanent':'one_time'):backend.lockEditing(passwordField.text);passwordField.clear();passwordRepeat.clear();if(ok)securityDialog.close()}
                 }
             }
         }

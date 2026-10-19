@@ -39,6 +39,13 @@ class EthernetParameterPort:
             raise ValueError('Another Ethernet operation is pending')
         self.policy.arm_utility(request)
 
+    def arm_unlock_clear(self,*args):
+        if not self.full_control or self.failed or self.pending is not None or self.recall_requests is not None:
+            raise ValueError('One Time unlock unavailable')
+        return self.policy.arm_unlock_clear(*args)
+
+    def end_unlock(self):self.policy.end_unlock()
+
     def cache_fir_bank(self,raw):self.policy.fir_bank=raw
     def begin_fir_startup(self):
         if not self.full_control or self.pending is not None or self.recall_requests is not None or self.failed:raise ValueError('FIR read unavailable')
@@ -72,7 +79,7 @@ class EthernetParameterPort:
         checked_slot(slot)
         if not self.input_and_recall or self.failed or self.pending is not None or self.recall_requests is not None:
             raise ValueError('Ethernet Recall unavailable')
-        if any(x is not None for x in (self.policy.armed,self.policy.utility_armed,self.policy.preset_armed,self.policy.prs_permit,self.policy.startup_fir)):
+        if any(x is not None for x in (self.policy.unlock_pending,self.policy.armed,self.policy.utility_armed,self.policy.preset_armed,self.policy.prs_permit,self.policy.startup_fir)):
             raise ValueError('Another Ethernet operation is armed')
         catalog=frame(0x22,b'');name=frame(0x29,bytes((slot-1,)))
         self.recall_requests=(catalog,name,*eeprom_requests(slot),frame(0x20,bytes((slot,))),

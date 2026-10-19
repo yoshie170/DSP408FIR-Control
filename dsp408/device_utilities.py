@@ -32,6 +32,7 @@ class UtilityRequest:
     device_id: int | None = None
     device_ip: str | None = None
     before: bytes | None = None
+    unlock_mode: str = 'permanent'
 
 def device_settings_read_request():return UtilityRequest('device_settings_read',frame(0x19,b'\x11\0\x08'))
 
@@ -73,8 +74,10 @@ def lock_request(password):
     return UtilityRequest('lock', frame(0x2F, password_bytes(password) + b'\x01'))
 
 
-def unlock_request(password):
-    return UtilityRequest('unlock', frame(0x2D, b'\x00' + password_bytes(password)))
+def unlock_request(password, mode='permanent'):
+    if mode not in ('permanent', 'one_time'):
+        raise ValueError('Choose One Time or Permanent lock protection.')
+    return UtilityRequest('unlock', frame(0x2D, b'\x00' + password_bytes(password)), unlock_mode=mode)
 
 
 def validate_utility(request):
@@ -93,12 +96,24 @@ def validate_utility(request):
     elif request.kind == 'lock' and packet.command == 0x2F and len(packet.data) == 5 and packet.data[-1] == 1:
         expected = lock_request(packet.data[:4].decode('ascii'))
     elif request.kind == 'unlock' and packet.command == 0x2D and len(packet.data) == 5 and packet.data[0] == 0:
-        expected = unlock_request(packet.data[1:].decode('ascii'))
+        expected = unlock_request(packet.data[1:].decode('ascii'), request.unlock_mode)
     else:
         raise ValueError('Utility request is outside the supported profile.')
     if expected != request:
         raise ValueError('Utility fields differ from the serialized request.')
     return packet
+
+
+def unlock_clear_packet(request):
+    """EXE496C4C/MCU BD36: disable saved protection after ordinary auth.
+
+    Keep the user's authenticated password bytes, never an OEM fallback.
+    The transport policy separately requires accepted2D and unlocked2C.
+    """
+    packet = validate_utility(request)
+    if request.kind != 'unlock' or request.unlock_mode != 'one_time':
+        raise ValueError('One Time authentication required.')
+    return frame(0x2F, packet.data[1:] + b'\0')
 
 
 def system_lock(payload):

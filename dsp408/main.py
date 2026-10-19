@@ -7,6 +7,7 @@ from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuickControls2 import QQuickStyle
 from dsp408.controller import Controller
 from dsp408.branding import application_icon
+from dsp408.version import VERSION
 
 def create_engine(controller):
     engine=QQmlApplicationEngine();engine.rootContext().setContextProperty('backend',controller)
@@ -27,6 +28,7 @@ def main():
     parser.add_argument('--connection-dialog',action='store_true');args=parser.parse_args()
     QQuickStyle.setStyle('Basic');app=QApplication(sys.argv)
     app.setApplicationName('DSP408FIR Control');app.setWindowIcon(application_icon())
+    app.setApplicationVersion(VERSION)
     for font in ('segoeui.ttf','segoeuib.ttf'):
         font_path=Path('C:/Windows/Fonts')/font
         if font_path.exists(): QFontDatabase.addApplicationFont(str(font_path))

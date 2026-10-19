@@ -1,6 +1,6 @@
 ; Build with Inno Setup 6.7+. No drivers, firmware or network configuration.
 #ifndef AppVersion
-  #define AppVersion "0.9.0"
+  #include "version.iss"
 #endif
 #ifndef AppSource
   #define AppSource SourcePath + "..\..\dist\DSP408FIR Control"
@@ -24,6 +24,8 @@ DefaultDirName={autopf}\DSP408FIR Control
 UsePreviousAppDir=yes
 DefaultGroupName=DSP408FIR Control
 PrivilegesRequired=admin
+PrivilegesRequiredOverridesAllowed=dialog
+UsePreviousPrivileges=yes
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0.19041
@@ -62,3 +64,18 @@ Type: files; Name: "{autodesktop}\DSP408 Control.lnk"
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,DSP408FIR Control}"; Flags: nowait postinstall skipifsilent unchecked
+
+[CustomMessages]
+polish.UpdateAction=Aktualizuj
+english.UpdateAction=Update
+polish.UpdateTitle=Aktualizacja DSP408FIR Control
+english.UpdateTitle=Update DSP408FIR Control
+polish.UpdateDescription=Zainstalowana wersja %1 → {#AppVersion}
+english.UpdateDescription=Installed version %1 → {#AppVersion}
+polish.UpdateDetails=Program zostanie zaktualizowany w dotychczasowym folderze. Ustawienia użytkownika i zapisane konfiguracje zostaną zachowane.%n%nZamknij DSP408FIR Control przed kontynuowaniem. Podczas instalacji możesz wybrać skrót na pulpicie.
+english.UpdateDetails=The application will be updated in its existing folder. User preferences and saved configurations will be retained.%n%nClose DSP408FIR Control before continuing. You can choose a desktop shortcut during installation.
+polish.NewerInstalled=Zainstalowano nowszą wersję (%1). Ten instalator zawiera {#AppVersion}. Aktualizacja do starszej wersji została zatrzymana.
+english.NewerInstalled=A newer version (%1) is installed. This installer contains {#AppVersion}. Downgrading has been stopped.
+
+[Code]
+#include "update.iss"
