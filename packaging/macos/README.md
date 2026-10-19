@@ -1,5 +1,31 @@
 # macOS preview build
 
+## Start without installing Python manually
+
+1. Download the current repository ZIP using **Code → Download ZIP** on GitHub,
+   or update your existing checkout.
+2. Extract the entire folder on your Mac.
+3. Double-click **START_MAC.command** inside that folder.
+
+The launcher downloads a pinned, checksum-verified uv binary and uses it to
+prepare Python 3.14.8 and the project dependencies automatically. The first
+start needs internet and may take several minutes; subsequent starts reuse the
+environment. Keep the Terminal window open while using the app.
+
+No Homebrew, manual activation, administrator password or system Python change
+is required. Bootstrap files stay under `work/macos-bootstrap/`; the isolated
+environment is `.venv-macos-auto`. The launcher does not modify shell profiles.
+It starts the application normally in DEMO; it never connects to a DSP itself.
+
+This launcher has passed shell syntax and offline host-guard checks on Windows;
+its first native Mac run remains to be verified.
+
+`macos-preview.yml.template` is an optional manual GitHub Actions build template.
+It is inactive until a repository maintainer installs it under `.github/workflows/`
+with the required workflow permission. No downloadable `.app` is claimed yet.
+
+## Building from source (developers)
+
 Native builds are prepared for **arm64** (Apple Silicon, including M5) and,
 separately, **x86_64** (Intel). This pipeline has not yet been run on a Mac.
 It is not a published, hardware-validated macOS release.
