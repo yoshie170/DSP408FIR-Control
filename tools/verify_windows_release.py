@@ -66,7 +66,7 @@ def verify():
     assert destination.is_relative_to(WORK.resolve()) and destination.parent==WORK.resolve()
     if registered():raise RuntimeError('Existing installation: do not replace it during verification')
     if destination.exists():raise RuntimeError('Test destination already exists; choose a fresh test run')
-    data=WORK/'test-user-data';data.mkdir(exist_ok=True)
+    data=WORK/'test-user-data';data.mkdir(parents=True,exist_ok=True)
     preferences=data/'ui-preferences.json'
     expected_preferences='{"schema":1,"theme":"light"}'
     if preferences.exists():
@@ -104,3 +104,4 @@ def verify():
 
 
 if __name__=='__main__':verify()
+

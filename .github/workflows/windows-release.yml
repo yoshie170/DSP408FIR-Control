@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['dsp408/version.py', '.github/workflows/windows-release.yml']
+    paths: ['dsp408/version.py', '.github/workflows/windows-release.yml', 'tools/verify_windows_release.py']
 permissions:
   contents: read
 concurrency:
