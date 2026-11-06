@@ -70,16 +70,16 @@ class ApplicationInfo(QObject):
     @Property('QVariantMap',constant=True)
     def metadata(self):
         return {'name':NAME,'version':VERSION,'build':BUILD,'author':AUTHOR,'copyright':COPYRIGHT,
-                'license':'MIT','github':GITHUB,'website':WEBSITE,
+                'license':'PolyForm Shield 1.0.0','github':GITHUB,'website':WEBSITE,
                 'technologies':f'Python {platform.python_version()} · PySide6 {PySide6.__version__} · Qt {qVersion()} / QML',
                 'independence':INDEPENDENCE,
-                'qtCopyright':'Qt / Qt for Python © The Qt Company Ltd. and other contributors. See Open Source Licenses.'}
+                'qtCopyright':'Qt / Qt for Python © The Qt Company Ltd. and other contributors. See Licenses and Notices.'}
 
     @Property('QVariantList',constant=True)
     def licenseDocuments(self):
         base=ASSETS/'licenses'
         files=sorted(p.relative_to(base).as_posix() for p in base.rglob('*.txt') if p.is_file())
-        return [{'title':'Application — MIT','key':'license'}, {'title':'Third-party notices','key':'notices'}]+[
+        return [{'title':'Application — PolyForm Shield 1.0.0','key':'license'}, {'title':'Third-party notices','key':'notices'}]+[
             {'title':name,'key':name} for name in files if name!='THIRD_PARTY_NOTICES.txt']
 
     @Property(str,notify=changed)

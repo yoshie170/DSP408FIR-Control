@@ -42,7 +42,12 @@ def read_bus_frame(payload):
 
 
 class HidReadPort:
-    """HIDAPI uses ID00 on write; strips it from unnumbered Windows reads."""
+    """HIDAPI ID00+64-byte writes, 64-byte unnumbered reads on Windows/macOS.
+
+    macOS hidapi 0.15 strips ID00 in set_report and returns original write
+    length; its input callback copies unnumbered reports without an ID prefix.
+    macOS additionally validates the attached device's report descriptor.
+    """
     def __init__(self): self.device = None;self.target_id=1;self.startup_fir=None
 
     def begin_fir_startup(self,*,source_display=False):
@@ -62,17 +67,23 @@ class HidReadPort:
     def end_fir_startup(self):self.startup_fir=None
 
     def open(self):
-        if sys.platform=='darwin':raise OSError('USB is not yet available in the macOS preview. Use Ethernet or DEMO.')
-        if sys.platform != 'win32': raise OSError('This captured USB profile is Windows only')
+        if sys.platform not in ('win32','darwin'): raise OSError('USB is supported on Windows and macOS only')
         try: import hid
         except ImportError as e:
-            raise OSError('Install USB support: .\\.venv\\Scripts\\python.exe -m pip install -r requirements-usb.txt') from e
+            raise OSError('USB HIDAPI support is missing. Run START_MAC.command again.' if sys.platform=='darwin' else 'Install USB support: .\\.venv\\Scripts\\python.exe -m pip install -r requirements-usb.txt') from e
         candidates = [d for d in hid.enumerate(VID, PID)
                       if d.get('vendor_id') == VID and d.get('product_id') == PID]
+        if sys.platform=='darwin':
+            # IOHID enumeration may list multiple top-level usages of one path.
+            candidates=list({d['path']:d for d in candidates}.values())
         if not candidates: raise OSError('FIR DSP408 USB not found. Power on and connect USB; close the original editor.')
         if len(candidates) != 1: raise OSError('Multiple matching HID interfaces/devices; disconnect other DSP units before connecting')
         self.device = hid.device()
-        try: self.device.open_path(candidates[0]['path'])
+        try:
+            self.device.open_path(candidates[0]['path'])
+            if sys.platform=='darwin':
+                from dsp408.hid_profile import validate_descriptor
+                validate_descriptor(self.device.get_report_descriptor())
         except Exception:
             self.close(); raise
         from dsp408.device_address import AddressedHid

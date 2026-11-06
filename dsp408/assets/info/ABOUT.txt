@@ -2,10 +2,10 @@
 
 Author: Łukasz Białas · https://gremium.tech
 Copyright © 2026 Łukasz Białas
-Application license: MIT
+Application license: PolyForm Shield 1.0.0
 Technologies: Python, PySide6, Qt 6 / QML
 Project: https://github.com/yoshie170/DSP408FIR-Control
 
 Independent software for the t.racks FIR DSP 408. Not officially affiliated with, endorsed by or supported by the device manufacturer.
 
-Third-party libraries retain their original licenses, including LGPLv3 for the applicable Qt / Qt for Python libraries. Full license texts and notices are included in the application under Help > Open Source Licenses.
+Third-party libraries retain their original licenses, including LGPLv3 for the applicable Qt / Qt for Python libraries. Full license texts and notices are included in the application under Help > Licenses and Notices.

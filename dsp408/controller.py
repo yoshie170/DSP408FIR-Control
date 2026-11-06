@@ -37,7 +37,7 @@ class Controller(QObject):
     def uiFontFamily(self):
         return 'Segoe UI' if sys.platform=='win32' else QFontDatabase.systemFont(QFontDatabase.SystemFont.GeneralFont).family()
     @Property(bool,constant=True)
-    def usbPlatformAvailable(self):return sys.platform=='win32'
+    def usbPlatformAvailable(self):return sys.platform in ('win32','darwin')
 
     changed=Signal()
     statusChanged=Signal()
@@ -256,6 +256,10 @@ class Controller(QObject):
     def networkTarget(self):return self._network_target.copy()
     @Property(str,notify=networkTargetChanged)
     def networkSourceIp(self):return self._network_source_ip
+    @Slot(result='QVariantList')
+    def localNetworkSources(self):
+        from dsp408.ethernet_socket import ipv4_interfaces
+        return ipv4_interfaces()
     @Property(str,notify=changed)
     def connectionMedium(self):return 'Ethernet' if self._connection_transport=='ethernet' else 'USB'
     @Property(str,notify=changed)

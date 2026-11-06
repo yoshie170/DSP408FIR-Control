@@ -14,11 +14,26 @@ ROOT=Path(__file__).resolve().parents[1]
 CONFIG=runpy.run_path(str(ROOT/'packaging/macos/bundle_config.py'))
 
 
-def verify(bundle,arch,output):
+def verify(bundle,arch,output,*,reference=None):
     if sys.platform!='darwin':raise RuntimeError('Native macOS verification requires a Mac.')
     bundle=Path(bundle).resolve();output=Path(output).resolve()
-    if not bundle.is_relative_to(ROOT/'dist') or bundle.suffix!='.app':
+    own=Path(reference).resolve() if reference is not None else bundle
+    if not own.is_relative_to(ROOT/'dist') or own.suffix!='.app' or bundle.suffix!='.app':
         raise ValueError('Verify the own .app under this project’s dist directory.')
+    if reference is not None:
+        # A clean temporary copy avoids Finder/iCloud metadata on build output.
+        # Require the entire payload to match the own dist bundle before launch.
+        def payload(root):
+            entries={}
+            for path in root.rglob('*'):
+                relative=path.relative_to(root).as_posix()
+                if path.is_symlink():entries[relative]=('link',os.readlink(path))
+                elif path.is_file():
+                    with path.open('rb') as stream:
+                        entries[relative]=('file',hashlib.file_digest(stream,'sha256').hexdigest())
+                else:entries[relative]=('directory',)
+            return entries
+        assert payload(bundle)==payload(own),'Temporary app differs from the own dist bundle'
     if arch not in CONFIG['ARCHITECTURES']:raise ValueError('Unsupported target architecture')
     output.mkdir(parents=True,exist_ok=True)
     with (bundle/'Contents/Info.plist').open('rb') as stream:info=plistlib.load(stream)

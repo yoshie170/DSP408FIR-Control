@@ -37,10 +37,10 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Code]
 procedure InitializeWizard;
 begin
-  if Pos('MIT License', WizardForm.LicenseMemo.Text) = 0 then RaiseException('Missing MIT text');
+  if Pos('PolyForm Shield License 1.0.0', WizardForm.LicenseMemo.Text) = 0 then RaiseException('Missing PolyForm Shield 1.0.0 text');
   if Pos('Copyright © 2026 Łukasz Białas', WizardForm.LicenseMemo.Text) = 0 then RaiseException('Missing Unicode author');
-  if Pos('Permission is hereby granted', WizardForm.LicenseMemo.Text) = 0 then RaiseException('Incomplete MIT text');
-  if Pos('WITHOUT WARRANTY', WizardForm.LicenseMemo.Text) = 0 then RaiseException('Missing disclaimer');
+  if Pos('The licensor grants you', WizardForm.LicenseMemo.Text) = 0 then RaiseException('Incomplete PolyForm Shield 1.0.0 text');
+  if Pos('without any warranty', WizardForm.LicenseMemo.Text) = 0 then RaiseException('Missing disclaimer');
   if WizardForm.LicenseAcceptedRadio.Checked then RaiseException('License is already accepted');
   if not WizardForm.LicenseNotAcceptedRadio.Checked then RaiseException('Expected default rejection');
   WizardForm.LicenseAcceptedRadio.Checked := True;
@@ -48,7 +48,7 @@ begin
   if Pos('Author: Łukasz Białas', WizardForm.InfoBeforeMemo.Text) = 0 then RaiseException('Missing author information');
   if Pos('Independent software', WizardForm.InfoBeforeMemo.Text) = 0 then RaiseException('Missing independence notice');
   if Pos('https://github.com/yoshie170/DSP408FIR-Control', WizardForm.InfoBeforeMemo.Text) = 0 then RaiseException('Missing project URL');
-  SaveStringToFile(ExpandConstant('{param:result}'), 'MIT/full-text/Unicode/acceptance/author/independence PASS', False);
+  SaveStringToFile(ExpandConstant('{param:result}'), 'PolyForm Shield 1.0.0/full-text/Unicode/acceptance/author/independence PASS', False);
   Abort;
 end;
 ''',encoding='utf-8-sig')
@@ -60,9 +60,9 @@ end;
             '/LANG='+language,'/result='+str(result),'/LOG='+str(output/(language+'.log'))],
             capture_output=True,timeout=30,creationflags=subprocess.CREATE_NO_WINDOW)
         assert executed.returncode==1,(executed.returncode,executed.stderr)
-        assert result.read_text()=='MIT/full-text/Unicode/acceptance/author/independence PASS'
+        assert result.read_text()=='PolyForm Shield 1.0.0/full-text/Unicode/acceptance/author/independence PASS'
     data={'passed':True,'languages':['polish','english'],'normal_license_default_unaccepted':True,
-          'full_mit_text':True,'unicode_author':True,'author_and_independence':True,'project_url':True,
+          'full_polyform_shield_text':True,'unicode_author':True,'author_and_independence':True,'project_url':True,
           'installation_performed':False,'registry_writes':False,'device_io':False}
     (output/'validation.json').write_text(json.dumps(data,indent=2),encoding='utf-8')
     return data

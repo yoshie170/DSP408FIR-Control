@@ -87,4 +87,10 @@ if [ "$(/bin/cat "$dsp_marker" 2>/dev/null || true)" != "$dsp_wanted" ] || \
 fi
 
 printf '\nOpening the application...\n'
+# Finder's recursive hidden flag can hide Qt plugins inside the private venv.
+# QDir excludes hidden plugins/QML modules even when their paths are correct.
+dsp_qt_root="$dsp_environment/lib/python3.14/site-packages/PySide6/Qt"
+if [ -d "$dsp_qt_root" ]; then
+    /usr/bin/chflags -R nohidden "$dsp_qt_root"
+fi
 "$dsp_python" "$dsp_root/main.py"

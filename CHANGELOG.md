@@ -1,5 +1,11 @@
 # Historia wydań
 
+## 0.9.2 — 2026-11-06
+
+- Application code now uses PolyForm Shield License 1.0.0; dependencies retain their original terms.
+- Version/build metadata: 0.9.2 / 170 for both platforms.
+- macOS: validated USB/Ethernet support, trackpad PEQ/fader gestures and a graphical DMG installer.
+
 ## 0.9.1 — 2026-10-19
 
 - Pakiety Windows oraz macOS Apple Silicon; obsługa USB HID i Ethernet na obu systemach.

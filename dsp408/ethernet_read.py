@@ -1,5 +1,6 @@
 """Confirmed Ethernet startup, reused by CLI and manual app connection."""
-import hashlib,socket,time
+import hashlib,time
+from dsp408.ethernet_socket import create_connection
 from ipaddress import IPv4Address
 from dsp408.ethernet_stream import EthernetFrames,ObservedEthernetGreeting,EDITOR_TCP_PORT
 from dsp408.source_codec import frame
@@ -17,7 +18,7 @@ def validate_request(raw):
     return p
 
 
-def read_snapshot(host,record,*,source_ip=None,request_gap_ms=0,connect=socket.create_connection,clock=time.monotonic,sleep=time.sleep,status=lambda _:None,
+def read_snapshot(host,record,*,source_ip=None,request_gap_ms=0,connect=create_connection,clock=time.monotonic,sleep=time.sleep,status=lambda _:None,
                   stop=None,session=None,frame_observed=lambda *args:None,fir_strategy='full',locked_startup=None):
     def cancelled():
         if stop is not None and stop.is_set():raise InterruptedError('Ethernet connection cancelled')
@@ -163,4 +164,3 @@ def read_snapshot(host,record,*,source_ip=None,request_gap_ms=0,connect=socket.c
             return result
         send(frame(0x11,b''))
         record(result);return result
-

@@ -2,17 +2,17 @@
 
 English · [Polski](README.md) · [GitHub](https://github.com/yoshie170/DSP408FIR-Control)
 
-**Version 0.9.1** · [Download](https://github.com/yoshie170/DSP408FIR-Control/releases/latest) · [Changelog](CHANGELOG.md)
+**Version 0.9.2** · [Download](https://github.com/yoshie170/DSP408FIR-Control/releases/latest) · [Changelog](CHANGELOG.md)
 
 **DSP408FIR Control** is an independent editor for the **t.racks FIR DSP 408**,
 available for Windows and macOS. Control input and output channels, configure
 PEQ, crossover, delay, dynamics and FIR, and manage presets and backups.
 Configurations can also be prepared and saved offline without a connected DSP.
 
-| Platform | Download version 0.9.1 |
+| Platform | Download version 0.9.2 |
 | --- | --- |
-| Windows 10/11, 64-bit | [Windows installer (.exe)](https://github.com/yoshie170/DSP408FIR-Control/releases/download/0.9.1/DSP408FIR-Control-0.9.1-Setup-win.exe) |
-| macOS 14.4+, Apple Silicon | [macOS package (.dmg)](https://github.com/yoshie170/DSP408FIR-Control/releases/download/0.9.1/DSP408FIR-Control-0.9.1-macOS-arm64.dmg) |
+| Windows 10/11, 64-bit | [Windows installer (.exe)](https://github.com/yoshie170/DSP408FIR-Control/releases/download/0.9.2/DSP408FIR-Control-0.9.2-Setup-win.exe) |
+| macOS 14.4+, Apple Silicon | [macOS package (.dmg)](https://github.com/yoshie170/DSP408FIR-Control/releases/download/0.9.2/DSP408FIR-Control-0.9.2-macOS-arm64.dmg) |
 
 Both packages include the runtime; Python and libraries do not need to be
 installed separately. **USB HID and Ethernet are supported on both Windows
@@ -202,7 +202,7 @@ Report an Issue (GitHub) and [gremium.tech](https://gremium.tech).
 About shows the application version/build, author, technologies and links.
 License texts and changelog are available offline.
 
-Original application code is licensed under [MIT](LICENSE). Dependencies,
+Original application code is licensed under [PolyForm Shield 1.0.0](LICENSE). Dependencies,
 including PySide6/Qt, retain their own terms; see
 [third-party notices](THIRD_PARTY_NOTICES.md).
 
@@ -221,7 +221,7 @@ errors, locked controls, PRS files, backups and installation issues.
 ## About the project
 
 Author: **Łukasz Białas** · [gremium.tech](https://gremium.tech).
-Copyright © 2026 Łukasz Białas. Original code is licensed under [MIT](LICENSE).
+Copyright © 2026 Łukasz Białas. Original code is licensed under [PolyForm Shield 1.0.0](LICENSE).
 Dependencies retain their own licenses; see
 [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) and the Help menu.
 
@@ -232,3 +232,5 @@ PRS/JSON configurations and DSPBANK backups are saved in your chosen folder.
 
 [Download](https://github.com/yoshie170/DSP408FIR-Control/releases/latest)
 · [Report an issue](https://github.com/yoshie170/DSP408FIR-Control/issues)
+
+Application code from 0.9.2: PolyForm Shield License 1.0.0. Previously distributed MIT versions retain their original terms. Third-party licenses remain unchanged.

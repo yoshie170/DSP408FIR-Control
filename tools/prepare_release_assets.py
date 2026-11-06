@@ -14,21 +14,21 @@ def prepare(root):
     (info/'ABOUT.txt').write_text('DSP408FIR Control\n\n'
         'Author: Łukasz Białas · https://gremium.tech\n'
         'Copyright © 2026 Łukasz Białas\n'
-        'Application license: MIT\n'
+        'Application license: PolyForm Shield 1.0.0\n'
         'Technologies: Python, PySide6, Qt 6 / QML\n'
         'Project: https://github.com/yoshie170/DSP408FIR-Control\n\n'
         'Independent software for the t.racks FIR DSP 408. Not officially affiliated with, '
         'endorsed by or supported by the device manufacturer.\n\n'
         'Third-party libraries retain their original licenses, including LGPLv3 for '
         'the applicable Qt / Qt for Python libraries. Full license texts and notices '
-        'are included in the application under Help > Open Source Licenses.\n',encoding='utf-8-sig')
+        'are included in the application under Help > Licenses and Notices.\n',encoding='utf-8-sig')
     target=Path(root)/'dsp408/assets/licenses'
     target.mkdir(parents=True,exist_ok=True)
     lines=['DSP408FIR Control - third-party components',
            'Copyright © 2026 Łukasz Białas · https://gremium.tech',
            'Project: https://github.com/yoshie170/DSP408FIR-Control',
            '', 'Components retain their original copyrights and licenses.',
-           'MIT applies to the application code, not to third-party components.',
+           'PolyForm Shield 1.0.0 applies to the application code, not to third-party components.',
            'Qt / Qt for Python: © The Qt Company Ltd. and other contributors.',
            'Applicable Qt / PySide6 / shiboken libraries use the LGPLv3 option.',
            'LGPL-3.0.txt and GPL-3.0.txt contain the corresponding license texts.',

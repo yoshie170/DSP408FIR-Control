@@ -16,10 +16,12 @@ jobs:
           python-version: '3.14'
           architecture: x64
       - run: python -m venv .venv
-      - run: .venv\Scripts\python.exe -m pip install -r requirements-lock.txt
+      - run: .venv\Scripts\python.exe -m pip install -r packaging/windows/requirements-lock.txt
       - run: choco install innosetup --version=6.7.3 -y --no-progress
       - shell: pwsh
         run: ./tools/build_windows.ps1
+      - shell: pwsh
+        run: .venv\Scripts\python.exe tools/verify_windows_release.py
       - uses: actions/upload-artifact@v4
         with:
           name: windows-installer

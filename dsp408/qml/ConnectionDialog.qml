@@ -8,14 +8,14 @@ ConsoleDialog {
     signal diagnosticsRequested()
     signal prsReviewRequested()
     objectName: 'connection_dialog'; title: 'CONNECTION'
-    width: Math.min(620,parent.width-40); height: Math.min(440,parent.height-32); modal: true
+    width: Math.min(620,parent.width-40); height: Math.min(510,parent.height-32); modal: true
     property string targetMessage: ''
     readonly property bool ethernet: transport.currentText==='Ethernet'
-    readonly property bool targetReady: !ethernet || backend.ethernetTargetValid(targetIp.text,targetId.value,'')
+    readonly property bool targetReady: !ethernet || backend.ethernetTargetValid(targetIp.text,targetId.value,sourceIp.text)
     function connect(readOnly) {
         if(ethernet) {
-            if(readOnly)backend.connectEthernetRead(targetIp.text,targetId.value,'')
-            else backend.connectEthernetControl(targetIp.text,targetId.value,'')
+            if(readOnly)backend.connectEthernetRead(targetIp.text,targetId.value,sourceIp.text)
+            else backend.connectEthernetControl(targetIp.text,targetId.value,sourceIp.text)
         } else {
             backend.setNetworkTarget(backend.networkTarget.ip,targetId.value)
             if(readOnly)backend.connectUsbRead()
@@ -24,6 +24,10 @@ ConsoleDialog {
     }
     onOpened: {
         targetIp.text=backend.networkTarget.ip;targetId.value=backend.networkTarget.device_id
+        sourceIp.text=backend.networkSourceIp
+        sourceAdapter.model=[{label:'System routing',ip:''}].concat(backend.localNetworkSources())
+        sourceAdapter.currentIndex=0
+        for(var i=0;i<sourceAdapter.model.length;i++)if(sourceAdapter.model[i].ip===sourceIp.text)sourceAdapter.currentIndex=i
         if(backend.usbReadActive)transport.currentIndex=Math.max(0,transport.find(backend.activeTransport==='ethernet'?'Ethernet':'USB'))
         targetMessage=''
     }
@@ -50,9 +54,22 @@ ConsoleDialog {
                 Label { text: 'DSP ID'; font.pixelSize: 11; color: Theme.color('#95b3c4',backend.lightTheme) }
                 SpinBox { id: targetId; objectName: 'ethernet_target_id'; implicitHeight: 32; implicitWidth: 100; from: 1; to: 250; editable: true; enabled: !backend.usbReadActive; onValueModified: root.targetMessage='' }
             }
-            ConsoleButton { objectName: 'save_network_target'; text: 'Save target'; Layout.alignment: Qt.AlignBottom; enabled: !backend.usbReadActive && backend.networkTargetValid(targetIp.text,targetId.value); onClicked: root.targetMessage=backend.setEthernetTarget(targetIp.text,targetId.value,'')?'Connection target saved':backend.displayMessage }
+            ConsoleButton { objectName: 'save_network_target'; text: 'Save target'; Layout.alignment: Qt.AlignBottom; enabled: !backend.usbReadActive && root.targetReady; onClicked: root.targetMessage=backend.setEthernetTarget(targetIp.text,targetId.value,sourceIp.text)?'Connection target saved':backend.displayMessage }
         }
-        Label { objectName: 'network_target_message'; text: root.targetMessage || (root.ethernet?'Set the computer address in system network settings. The app uses system routing.':'Choose the ID of the connected processor.'); color: Theme.color('#95b3c4',backend.lightTheme); font.pixelSize: 11; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+        RowLayout {
+            visible: root.ethernet; Layout.fillWidth: true; spacing: 12
+            ColumnLayout {
+                Layout.fillWidth: true; spacing: 4
+                Label { text: 'Computer adapter'; font.pixelSize: 11; color: Theme.color('#95b3c4',backend.lightTheme) }
+                ComboBox { id: sourceAdapter; objectName: 'ethernet_source_adapter'; textRole: 'label'; Layout.fillWidth: true; implicitHeight: 32; enabled: !backend.usbReadActive; onActivated: sourceIp.text=model[currentIndex].ip }
+            }
+            ColumnLayout {
+                spacing: 4
+                Label { text: 'Computer IPv4 (optional)'; font.pixelSize: 11; color: Theme.color('#95b3c4',backend.lightTheme) }
+                TextField { id: sourceIp; objectName: 'ethernet_source_ip'; implicitWidth: 160; implicitHeight: 32; enabled: !backend.usbReadActive; maximumLength: 15; selectByMouse: true; placeholderText: 'System routing'; validator: RegularExpressionValidator { regularExpression: /[0-9.]{0,15}/ } }
+            }
+        }
+        Label { objectName: 'network_target_message'; text: root.targetMessage || (root.ethernet?'For a direct cable, select the Ethernet adapter. Set its IPv4 in system settings; the app does not change network settings.':'Choose the ID of the connected processor.'); color: Theme.color('#95b3c4',backend.lightTheme); font.pixelSize: 11; Layout.fillWidth: true; wrapMode: Text.WordWrap }
         Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Theme.color('#294451',backend.lightTheme) }
         RowLayout {
             Layout.fillWidth: true; spacing: 12

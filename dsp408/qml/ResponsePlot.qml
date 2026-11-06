@@ -131,7 +131,7 @@ Rectangle {
             objectName: root.showBands ? 'peq_drag_area' : 'coefficient_plot_mouse'
             anchors.fill: parent
             enabled: root.showBands
-            acceptedButtons: Qt.LeftButton; preventStealing: true; scrollGestureEnabled: false
+            acceptedButtons: Qt.LeftButton; preventStealing: true; scrollGestureEnabled: true
             property int dragged: -1
             property int channelIndex: -1
             property bool moved: false
@@ -142,7 +142,7 @@ Rectangle {
             property real pendingGain: 0
             property int wheelChannel: -1
             property int wheelBand: -1
-            property real wheelRemainder: 0
+            ScrollSteps { id: wheelSteps }
             function queuePoint(x,y) {
                 pendingFrequency=Math.max(backend.options.frequencyMin,Math.min(backend.options.frequencyMax,backend.options.frequencyMin*Math.pow(backend.options.frequencyMax/backend.options.frequencyMin,(x-36)/plot.plotWidth())))
                 pendingGain=Math.max(-12,Math.min(12,plot.gainAtY(y)))
@@ -158,13 +158,12 @@ Rectangle {
                 var best=21;dragged=-1;channelIndex=backend.selected;pending=false
                 moved=false;pressX=mouse.x;pressY=mouse.y
                 for(var i=0;i<plot.bands.length;i++){var f=plot.bands[i];if(!f.enabled)continue;var dist=Math.hypot(mouse.x-plot.fx(f.frequency),mouse.y-plot.nodeY(f.gain));if(dist<best){best=dist;dragged=i}}
-                if(dragged>=0){root.bandSelected(dragged);wheelChannel=channelIndex;wheelBand=dragged;wheelRemainder=0}
+                if(dragged>=0){root.bandSelected(dragged);wheelChannel=channelIndex;wheelBand=dragged;wheelSteps.reset()}
             }
             onWheel: wheel => {
-                if(wheelChannel!==backend.selected || wheelBand!==root.band || !plot.bands[root.band] || !plot.bands[root.band].enabled){wheel.accepted=false;return}
+                if(wheelChannel!==backend.selected || wheelBand!==root.band || !plot.bands[root.band] || !plot.bands[root.band].enabled){wheelSteps.reset();wheel.accepted=false;return}
                 wheel.accepted=true
-                wheelRemainder+=wheel.angleDelta.y
-                var steps=Math.trunc(wheelRemainder/120);wheelRemainder-=steps*120
+                var steps=wheelSteps.take(wheel)
                 var choices=backend.options.qValues, stride=(wheel.modifiers & Qt.ShiftModifier)?1:5
                 var q=root.currentData.filters[root.band].q, next=q
                 if(root.fineQ){

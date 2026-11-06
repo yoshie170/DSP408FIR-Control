@@ -58,12 +58,6 @@ Rectangle {
         from: 0; to: 1; stepSize: root.choices.length ? 1/(root.choices.length-1) : root.logarithmic ? .005 : root.step/(root.maximum-root.minimum)
         Binding { target: slider; property: 'value'; value: root.position(root.number); when: !slider.pressed; restoreMode: Binding.RestoreNone }
         wheelEnabled: false
-        FaderGestures {
-            number: root.number; minimum: root.minimum; maximum: root.maximum
-            choices: root.choices; wheelStep: root.wheelStep; choiceStride: root.wheelChoiceStride
-            resetToZero: root.resetToZero
-            onCommitted: value => root.committed(value)
-        }
         onPressedChanged: if(!pressed)backend.flushControlView()
         onMoved: root.committed(root.decoded(value))
         Keys.onUpPressed: root.committed(root.decoded(Math.min(1,root.position(root.number)+slider.stepSize)))
@@ -91,6 +85,14 @@ Rectangle {
         }
         Accessible.name: root.label + ' slider'
         ToolTip.visible: hovered && root.hint.length>0; ToolTip.text: root.hint
+    }
+    FaderGestures {
+        // The whole fader card is a scroll target, including its value/scale.
+        // Clicks and drags still go to the slider and number field.
+        number: root.number; minimum: root.minimum; maximum: root.maximum
+        choices: root.choices; wheelStep: root.wheelStep; choiceStride: root.wheelChoiceStride
+        resetToZero: root.resetToZero; tapTarget: slider; horizontal: !root.vertical
+        onCommitted: value => root.committed(value)
     }
     Column {
         visible: root.vertical

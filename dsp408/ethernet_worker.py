@@ -1,9 +1,10 @@
 """Manual direct Ethernet read session. No setters or HID adaptation/padding."""
-import socket,time
+import time
 from pathlib import Path
 from threading import Event
 from PySide6.QtCore import QThread,Signal
 from dsp408.ethernet_read import read_snapshot
+from dsp408.ethernet_socket import create_connection
 from dsp408.ethernet_stream import EthernetFrames
 from dsp408.source_codec import frame
 from dsp408.editor_rx_research import decode_telemetry_payload
@@ -79,7 +80,7 @@ class EthernetReadWorker(QThread):
     presetMetadata=Signal(object);telemetry=Signal(object);frameObserved=Signal(str,bytes)
     journalPath=Signal(str);failed=Signal(str)
 
-    def __init__(self,host,source_ip,parent=None,*,poll_ms=100,connect=socket.create_connection,
+    def __init__(self,host,source_ip,parent=None,*,poll_ms=100,connect=create_connection,
                  directory=None,clock=time.monotonic,fir_strategy='full',device_id=1):
         if type(poll_ms) is not int or poll_ms not in (100,300):raise ValueError('Choose 100 or 300 ms polling')
         if fir_strategy not in ('full','source-display'):raise ValueError('Unknown Ethernet FIR strategy')

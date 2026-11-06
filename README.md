@@ -2,7 +2,7 @@
 
 [English](README.en.md) · Polski · [GitHub](https://github.com/yoshie170/DSP408FIR-Control)
 
-**Wersja 0.9.1** · [Pobierz](https://github.com/yoshie170/DSP408FIR-Control/releases/latest) · [Zmiany w wydaniach](CHANGELOG.md)
+**Wersja 0.9.2** · [Pobierz](https://github.com/yoshie170/DSP408FIR-Control/releases/latest) · [Zmiany w wydaniach](CHANGELOG.md)
 
 **DSP408FIR Control** to niezależny edytor procesora **t.racks FIR DSP 408**
 dla Windows i macOS. Pozwala sterować kanałami wejściowymi i wyjściowymi,
@@ -10,10 +10,10 @@ konfigurować PEQ, crossover, delay, dynamikę i FIR oraz zarządzać presetami
 i kopiami zapasowymi. Konfiguracje można również przygotowywać i zapisywać
 offline, bez podłączonego urządzenia.
 
-| System | Pobierz wersję 0.9.1 |
+| System | Pobierz wersję 0.9.2 |
 | --- | --- |
-| Windows 10/11, 64-bit | [Instalator Windows (.exe)](https://github.com/yoshie170/DSP408FIR-Control/releases/download/0.9.1/DSP408FIR-Control-0.9.1-Setup-win.exe) |
-| macOS 14.4+, Apple Silicon | [Wersja macOS (.dmg)](https://github.com/yoshie170/DSP408FIR-Control/releases/download/0.9.1/DSP408FIR-Control-0.9.1-macOS-arm64.dmg) |
+| Windows 10/11, 64-bit | [Instalator Windows (.exe)](https://github.com/yoshie170/DSP408FIR-Control/releases/download/0.9.2/DSP408FIR-Control-0.9.2-Setup-win.exe) |
+| macOS 14.4+, Apple Silicon | [Wersja macOS (.dmg)](https://github.com/yoshie170/DSP408FIR-Control/releases/download/0.9.2/DSP408FIR-Control-0.9.2-macOS-arm64.dmg) |
 
 Gotowe pakiety zawierają środowisko uruchomieniowe — nie trzeba instalować
 Pythona ani bibliotek. **USB HID i Ethernet są obsługiwane zarówno na Windowsie,
@@ -211,11 +211,11 @@ About pokazuje ikonę, wersję, numer buildu, autora, technologie oraz aktywne l
 do strony autora i projektu. Licencje i
 changelog można przeczytać bez internetu, także w wersji zainstalowanej.
 
-Autorski kod aplikacji udostępniono na [licencji MIT](LICENSE).
+Autorski kod aplikacji udostępniono na [licencji PolyForm Shield 1.0.0](LICENSE).
 Copyright © 2026 Łukasz Białas · [gremium.tech](https://gremium.tech).
 Biblioteki, w tym PySide6/Qt, zachowują własne warunki; pełne teksty są w Help
 oraz `dsp408/assets/licenses/`. [Informacje o składnikach](THIRD_PARTY_NOTICES.md).
-Instalator wyświetla informację o autorze i ekran akceptacji licencji MIT.
+Instalator wyświetla informację o autorze i ekran akceptacji licencji PolyForm Shield 1.0.0.
 
 **Copy Diagnostics** kopiuje do schowka wersje aplikacji i bibliotek, system
 operacyjny oraz podstawowy stan połączenia: USB/Ethernet, Control/Read only,
@@ -253,7 +253,7 @@ Więcej wskazówek znajdziesz w [rozwiązywaniu problemów](docs/TROUBLESHOOTING
 ## O projekcie
 
 Autor: **Łukasz Białas** · [gremium.tech](https://gremium.tech).
-Copyright © 2026 Łukasz Białas. Autorski kod ma [licencję MIT](LICENSE).
+Copyright © 2026 Łukasz Białas. Autorski kod ma [licencję PolyForm Shield 1.0.0](LICENSE).
 Biblioteki zachowują własne licencje opisane w
 [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) i dostępne w menu Help.
 
@@ -264,3 +264,5 @@ Konfiguracje PRS/JSON i kopie DSPBANK zapisujesz w wybranym przez siebie folderz
 
 [Pobierz aplikację](https://github.com/yoshie170/DSP408FIR-Control/releases/latest)
 · [Zgłoś problem](https://github.com/yoshie170/DSP408FIR-Control/issues)
+
+Application code from 0.9.2: PolyForm Shield License 1.0.0. Previously distributed MIT versions retain their original terms. Third-party licenses remain unchanged.

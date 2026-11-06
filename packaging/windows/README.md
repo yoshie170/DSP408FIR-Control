@@ -2,7 +2,7 @@
 
 Project: https://github.com/yoshie170/DSP408FIR-Control
 
-The package is `dist/installer/DSP408FIR-Control-0.9.1-Setup.exe` for
+The package is `dist/installer/DSP408FIR-Control-0.9.2-Setup.exe` for
 Windows10 build19041 or later / Windows11, x64-compatible. Python and Qt are
 included. Default installation: `C:\Program Files\DSP408FIR Control`.
 
@@ -19,7 +19,7 @@ Setup must not bypass the connected-DSP close confirmation. Other independent
 copies are unaffected. The same check protects uninstall. Automatic closing
 and restarting are disabled deliberately.
 
-The wizard shows the author/independence notice and requires MIT acceptance.
+The wizard shows the author/independence notice and requires PolyForm Shield 1.0.0 acceptance.
 Component license texts are included offline and keep their separate terms.
 Installation does not open a DSP connection or change drivers, firmware or
 network settings. The EXE currently has no code-signing certificate.
@@ -76,7 +76,7 @@ uninsNNN.exe from the registered folder, then exits without reinstalling.
   offline package and lets it exit normally. No installation/registry writes.
 - `verify_installer_update.py`: native version ordering and maintenance wizard,
   aborting before installation and without registry writes.
-- `verify_help_license.py`: native full-text/author/MIT-acceptance checks in
+- `verify_help_license.py`: native full-text/author/PolyForm Shield 1.0.0-acceptance checks in
   both languages, aborting before installation.
 - `verify_installer_copies.py`: actual isolated current-user fixture installs
   under a separate random test AppId; removes only its own test registrations.

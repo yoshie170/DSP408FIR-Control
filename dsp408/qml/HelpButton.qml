@@ -9,7 +9,7 @@ ConsoleButton {
     property var info: backend.information
     function showSafety() { safety.open() }
     function showDocument(kind) {
-        documents.title=kind==='changelog'?'Changelog':'Open Source Licenses'
+        documents.title=kind==='changelog'?'Changelog':'Licenses and Notices'
         documents.licenses=kind!=='changelog'
         licenseChoice.currentIndex=0
         documentText.text=info.document(kind==='changelog'?'changelog':'license')
@@ -29,7 +29,7 @@ ConsoleButton {
             background: Rectangle { radius: 4; color: entry.highlighted?Theme.color('#17445c',backend.lightTheme):'transparent' }
         }
         Action { objectName: 'help_about'; text: 'About'; onTriggered: about.open() }
-        Action { objectName: 'help_licenses'; text: 'Open Source Licenses'; onTriggered: root.showDocument('licenses') }
+        Action { objectName: 'help_licenses'; text: 'Licenses and Notices'; onTriggered: root.showDocument('licenses') }
         Action { objectName: 'help_changelog'; text: 'Changelog'; onTriggered: root.showDocument('changelog') }
         MenuSeparator { contentItem: Rectangle { implicitHeight: 1; color: Theme.color('#294451',backend.lightTheme) } }
         Action { objectName: 'help_copy_diagnostics'; text: 'Copy Diagnostics'; onTriggered: { about.open();root.info.copyDiagnostics() } }
@@ -58,7 +58,7 @@ ConsoleButton {
                 }
             }
             Label { text: root.info.metadata.copyright; Layout.fillWidth: true; wrapMode: Text.WordWrap }
-            Label { text: 'MIT License · application code'; Layout.fillWidth: true }
+            Label { text: 'PolyForm Shield License 1.0.0 · application code'; Layout.fillWidth: true }
             Label { text: root.info.metadata.technologies; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: Theme.color('#9ab5c6',backend.lightTheme) }
             Label { text: root.info.metadata.independence; Layout.fillWidth: true; wrapMode: Text.WordWrap; font.pixelSize: 11 }
             Label { text: root.info.metadata.qtCopyright; Layout.fillWidth: true; wrapMode: Text.WordWrap; font.pixelSize: 10; color: Theme.color('#9ab5c6',backend.lightTheme) }

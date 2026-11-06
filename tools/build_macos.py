@@ -32,6 +32,10 @@ def build(arch=None):
     for key in ('PYTHONHOME','PYTHONPATH','QT_PLUGIN_PATH','QML_IMPORT_PATH','QML2_IMPORT_PATH'):
         env.pop(key,None)
     def run(*args):subprocess.run(list(map(str,args)),cwd=ROOT,env=env,check=True)
+    # Finder can mark the private environment's contents recursively hidden;
+    # Qt excludes hidden platform plugins and QML modules from discovery.
+    import PySide6
+    run('/usr/bin/chflags','-R','nohidden',Path(PySide6.__file__).parent/'Qt')
     run(sys.executable,ROOT/'tools/prepare_release_assets.py')
     run(sys.executable,ROOT/'tools/build_macos_icon.py')
     dist=ROOT/'dist/macos'/arch

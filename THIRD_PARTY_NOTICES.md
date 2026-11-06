@@ -1,12 +1,12 @@
 # Third-party notices
 
-DSP408FIR Control application code is licensed under the [MIT License](LICENSE).
+DSP408FIR Control application code is licensed under the [PolyForm Shield License 1.0.0](LICENSE).
 Copyright © 2026 Łukasz Białas · [gremium.tech](https://gremium.tech).
 Project: [DSP408FIR-Control](https://github.com/yoshie170/DSP408FIR-Control).
-Third-party components retain their own copyrights and licenses; MIT does not
+Third-party components retain their own copyrights and licenses; PolyForm Shield 1.0.0 does not
 replace their license terms.
 
-The application includes an offline viewer: **Help → Open Source Licenses**.
+The application includes an offline viewer: **Help → Licenses and Notices**.
 Full license texts and notices are bundled in `dsp408/assets/licenses/`.
 
 | Component | Notice / license |
@@ -41,4 +41,4 @@ Official references: [Qt for Python](https://doc.qt.io/qtforpython-6/licenses.ht
 This is independent software for the t.racks FIR DSP 408. It is not officially
 affiliated with, endorsed by or supported by the device manufacturer.
 Manufacturer names identify compatibility; no manufacturer binaries or firmware
-are included in the application installer or covered by the application's MIT grant.
+are included in the application installer or covered by the application's PolyForm Shield 1.0.0 grant.

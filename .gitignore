@@ -53,3 +53,6 @@ __pycache__/
 *.key
 *.pfx
 *.p12
+
+!/tools/build_macos_dmg.py
+!/tools/set_macos_file_icon.swift

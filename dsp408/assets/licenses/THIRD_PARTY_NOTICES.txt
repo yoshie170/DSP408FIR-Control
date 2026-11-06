@@ -3,7 +3,7 @@ Copyright © 2026 Łukasz Białas · https://gremium.tech
 Project: https://github.com/yoshie170/DSP408FIR-Control
 
 Components retain their original copyrights and licenses.
-MIT applies to the application code, not to third-party components.
+PolyForm Shield 1.0.0 applies to the application code, not to third-party components.
 Qt / Qt for Python: © The Qt Company Ltd. and other contributors.
 Applicable Qt / PySide6 / shiboken libraries use the LGPLv3 option.
 LGPL-3.0.txt and GPL-3.0.txt contain the corresponding license texts.

@@ -9,14 +9,18 @@ Item {
     property var choices: []
     property int choiceStride: 1
     property bool resetToZero: false
+    property bool horizontal: false
+    property Item tapTarget: parent
     signal committed(real value)
-    WheelHandler {
-        target: null
-        property real remainder: 0
+    ScrollSteps { id: wheelSteps; pixelsPerStep: 4; horizontal: root.horizontal }
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
+        scrollGestureEnabled: true
         onWheel: event => {
+            if(!root.horizontal && event.pixelDelta.y===0 && event.angleDelta.y===0 && event.pixelDelta.x!==0){event.accepted=false;return}
             event.accepted=true
-            remainder+=event.angleDelta.y
-            var steps=Math.trunc(remainder/120);remainder-=steps*120
+            var steps=wheelSteps.take(event)
             if(!steps)return
             var value=root.number
             if(root.choices.length && root.wheelStep<=0){
@@ -30,7 +34,7 @@ Item {
     }
     TapHandler {
         enabled: root.resetToZero
-        parent: root.parent
+        parent: root.tapTarget
         target: null
         acceptedButtons: Qt.LeftButton
         gesturePolicy: TapHandler.DragThreshold
