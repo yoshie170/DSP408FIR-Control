@@ -1,0 +1,27 @@
+name: Windows release build
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['dsp408/version.py']
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          architecture: x64
+      - run: python -m venv .venv
+      - run: .venv\Scripts\python.exe -m pip install -r requirements-lock.txt
+      - run: choco install innosetup --version=6.7.3 -y --no-progress
+      - shell: pwsh
+        run: ./tools/build_windows.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: dist/installer/*
+          if-no-files-found: error
